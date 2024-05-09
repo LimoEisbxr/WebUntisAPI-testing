@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder, } from "discord.js";
 import { WebUntis } from "webuntis";
-import { prisma } from "./index.js";
 import { getTimeTableForDate, } from "../../WebUntisAPI/APIFunctions.js";
+import { getUntisUserData } from "../../Database/databaseFunctions.js";
 export const data = new SlashCommandBuilder()
     .setName("timetabledate")
     .setDescription("Get your timetable for today.")
@@ -11,27 +11,7 @@ export const data = new SlashCommandBuilder()
     .setRequired(true));
 export async function execute(interaction) {
     const date = interaction.options.getString("date");
-    let user;
-    try {
-        user = await prisma.untisUser.findUniqueOrThrow({
-            where: {
-                discordId: interaction.user.id,
-            },
-            select: {
-                untisSchoolName: true,
-                untisUsername: true,
-                untisPassword: true,
-                untisUrl: true,
-            },
-        });
-    }
-    catch (error) {
-        await interaction.reply({
-            content: "You need to login first using /login.",
-            ephemeral: true,
-        });
-        return;
-    }
+    let user = await getUntisUserData(interaction.user.id);
     const untis = new WebUntis(user.untisSchoolName, user.untisUsername, user.untisPassword, user.untisUrl);
     try {
         await untis.login();

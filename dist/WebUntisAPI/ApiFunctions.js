@@ -1,3 +1,7 @@
+import { WebUntis } from "webuntis";
+export async function createUntis(user) {
+    return new WebUntis(user.schoolName, user.username, user.password, user.url);
+}
 export async function getTimetableForToday(untis) {
     await untis.login();
     const timetable_today = await untis.getOwnTimetableForToday();
