@@ -1,0 +1,1 @@
+{"version":3,"file":"ping.js","sourceRoot":"","sources":["../../../src/Discord_Bot/commands/ping.ts"],"names":[],"mappings":"AAAA,OAAO,EAAsB,mBAAmB,EAAE,MAAM,YAAY,CAAC;AAErE,MAAM,CAAC,MAAM,IAAI,GAAG,IAAI,mBAAmB,EAAE;KACxC,OAAO,CAAC,MAAM,CAAC;KACf,cAAc,CAAC,oBAAoB,CAAC,CAAC;AAE1C,MAAM,CAAC,KAAK,UAAU,OAAO,CAAC,WAA+B;IACzD,OAAO,WAAW,CAAC,KAAK,CAAC,OAAO,CAAC,CAAC;AACtC,CAAC"}

@@ -1,0 +1,22 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model UntisUser {
+    id              String   @id @default(cuid())
+    createdAt       DateTime @default(now())
+    discordId       String   @unique
+    discordUsername String
+    untisSchoolName String
+    untisUsername   String
+    untisPassword   String
+    untisUrl        String
+}

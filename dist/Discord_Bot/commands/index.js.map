@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/Discord_Bot/commands/index.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,IAAI,MAAM,WAAW,CAAC;AAClC,OAAO,KAAK,KAAK,MAAM,YAAY,CAAC;AACpC,OAAO,EAAE,YAAY,EAAE,MAAM,gBAAgB,CAAC;AAE9C,MAAM,CAAC,MAAM,MAAM,GAAG,IAAI,YAAY,EAAE,CAAC;AAEzC,MAAM,CAAC,MAAM,QAAQ,GAAG;IACpB,IAAI;IACJ,KAAK;CACR,CAAC"}
