@@ -1,12 +1,12 @@
-import { WebUntis } from 'webuntis';
-import { getRandomPrimaryUser } from '../Database/databaseFunctions.js';
-import { getAllTeachers } from './APIFunctions.js';
+import { WebUntis } from "webuntis";
+import { getRandomPrimaryUser } from "../Database/databaseFunctions.js";
+import { getAllTeachers } from "./APIFunctions.js";
 
 export async function updateDB() {
     const primaryUser = await getRandomPrimaryUser();
 
     if (primaryUser === false) {
-        console.log('No primary user found!');
+        console.log("No primary user found!");
         return;
     }
 
@@ -17,8 +17,8 @@ export async function updateDB() {
         primaryUser.UntisUser.untisUrl
     );
 
-    const allTeachers = getAllTeachers(untis);
+    const allTeachers = await getAllTeachers(untis);
 
-    console.log('Updating DB... allTeachers:', allTeachers);
-    console.log('DB updated!');
+    console.log("Updating DB... allTeachers:", allTeachers);
+    console.log("DB updated!");
 }
