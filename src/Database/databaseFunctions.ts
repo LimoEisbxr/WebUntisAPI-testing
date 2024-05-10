@@ -1,5 +1,5 @@
-import { WebUntis } from 'webuntis';
-import { PrismaClient } from '@prisma/client';
+import { WebUntis } from "webuntis";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient() as any;
 
@@ -49,7 +49,7 @@ export async function saveToDB(modelName: string, data: any[]): Promise<void> {
                 create: item,
             });
         }
-        console.log('Data saved successfully');
+        console.log("Data saved successfully");
     } catch (error) {
         console.error(
             `An error occurred while saving the data to ${modelName}:`,
@@ -67,9 +67,17 @@ export async function getAllUntisAccounts(
 ): Promise<any[]> {
     if (onlyDifferentClasses) {
         return prisma.untisUser.findMany({
-            distinct: ['untisSchoolName'],
+            distinct: ["untisSchoolName"],
         });
     } else {
         return prisma.untisUser.findMany();
     }
+}
+
+export async function getTeacherData(teacherId: number): Promise<any> {
+    return prisma.teacher.findUnique({
+        where: {
+            teacherId: teacherId,
+        },
+    });
 }

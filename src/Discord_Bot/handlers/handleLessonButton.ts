@@ -1,8 +1,12 @@
 import { ButtonInteraction, EmbedBuilder } from "discord.js";
 import { WebUntis } from "webuntis";
-import { getUntisUserData } from "../../Database/databaseFunctions.js";
+import {
+    getUntisUserData,
+    getTeacherData,
+} from "../../Database/databaseFunctions.js";
 import { getTimeTableForDate } from "../../WebUntisAPI/APIFunctions.js";
 import { mergeLessons } from "../../WebUntisAPI/dataFormatting.js";
+import { formatUntisTime } from "../Utility/formatters.js";
 
 export async function handleLessonButton(interaction: ButtonInteraction) {
     const buttonId = interaction.customId;
@@ -35,6 +39,8 @@ export async function handleLessonButton(interaction: ButtonInteraction) {
         return;
     }
 
+    const teacher = await getTeacherData(lesson.te[0].id);
+
     // Create a new embed message
     const embed = new EmbedBuilder()
         .setColor("#0099ff")
@@ -42,8 +48,16 @@ export async function handleLessonButton(interaction: ButtonInteraction) {
         .setDescription(`Details for the lesson clicked by ${username}`)
         .addFields(
             { name: "Date", value: date.toDateString() },
-            { name: "Time", value: `${lesson.startTime} - ${lesson.endTime}` },
-            { name: "Teacher", value: `${lesson.te[0].longname}` }
+            {
+                name: "Time",
+                value: `${await formatUntisTime(
+                    lesson.startTime.toString()
+                )} - ${await formatUntisTime(lesson.endTime.toString())}`,
+            },
+            {
+                name: "Teacher",
+                value: `${teacher.foreName} ${teacher.longName}`,
+            }
         );
 
     // Filter out existing detail embeds

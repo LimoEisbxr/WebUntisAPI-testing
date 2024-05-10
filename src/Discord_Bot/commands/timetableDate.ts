@@ -10,7 +10,7 @@ import { getTimeTableForDate } from "../../WebUntisAPI/APIFunctions.js";
 import { getUntisUserData } from "../../Database/databaseFunctions.js";
 import { mergeLessons } from "../../WebUntisAPI/dataFormatting.js";
 import { generateActionRow } from "../../Discord_Bot/Utility/lessonsActionRow.js";
-import { client } from "../../index.js";
+import { formatUntisTime } from "../Utility/formatters.js";
 
 export const data = new SlashCommandBuilder()
     .setName("timetabledate")
@@ -92,18 +92,14 @@ export async function execute(interaction: CommandInteraction) {
             `${titleStartTime}  ${titleEndTime}  ${titleSubject}  ${titleTeachers}`
         );
 
-        timetable_today.forEach((lesson) => {
+        timetable_today.forEach(async (lesson) => {
             let teacher = lesson.te[0].longname;
 
             // Convert time to string, insert colon at appropriate position
-            let startTime = lesson.startTime.toString();
-            startTime = startTime.slice(0, -2) + ":" + startTime.slice(-2);
-
-            let endTime = lesson.endTime.toString();
-            endTime = endTime.slice(0, -2) + ":" + endTime.slice(-2);
+            let startTime = await formatUntisTime(lesson.startTime.toString());
+            let endTime = await formatUntisTime(lesson.endTime.toString());
 
             let subject = lesson.su[0].name;
-
             tableRows.push(
                 `${startTime.padEnd(5, " ")}  ${endTime.padEnd(
                     5,
