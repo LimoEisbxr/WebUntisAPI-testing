@@ -44,6 +44,6 @@ model Teacher {
 model primaryUser {
     id            String    @id @default(cuid())
     discordId     String    @unique
-    untisUser     UntisUser @relation(fields: [discordId], references: [discordId])
+    UntisUser     UntisUser @relation(fields: [discordId], references: [discordId])
     primaryUserId String?
 }

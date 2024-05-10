@@ -4,11 +4,10 @@ import {
     CommandInteractionOptionResolver,
 } from 'discord.js';
 import { prisma } from './index.js';
-import { WebUntis } from 'webuntis';
-import { setVarToDefaultIfNotValid } from '../../utils.js';
+import { checkIfVarIsValid, setVarToDefaultIfNotValid } from '../../utils.js';
 
 export const data = new SlashCommandBuilder()
-    .setName('primaryUser')
+    .setName('primaryuser')
     .setDescription('Add yourself as a primary user.')
     .addBooleanOption((option) =>
         option
@@ -25,13 +24,13 @@ export async function execute(interaction: CommandInteraction) {
     remove = setVarToDefaultIfNotValid(remove, false);
 
     if (remove) {
-        await createPrimaryUser(interaction.user.id);
-
+        await removePrimaryUser(interaction.user.id);
         await interaction.reply({
             content: 'You have been removed as a primary user.',
             ephemeral: true,
         });
     } else {
+        await createPrimaryUser(interaction.user.id);
         await interaction.reply({
             content: 'You have been added as a primary user.',
             ephemeral: true,
@@ -40,16 +39,30 @@ export async function execute(interaction: CommandInteraction) {
 }
 
 async function createPrimaryUser(discordId: string) {
-    const newUser = await prisma.primaryUser.create({
-        data: {
+    if (discordId === null || discordId === undefined) {
+        throw new Error('Discord ID is not valid.');
+    }
+    const newUser = await prisma.primaryUser.upsert({
+        where: { discordId: discordId },
+        update: { discordId: discordId },
+        create: {
             discordId: discordId,
-            untisUser: {
-                connect: {
-                    discordId: discordId,
-                },
-            },
+            // Assuming UntisUser is a relation field
         },
     });
 
     return newUser;
+}
+
+async function removePrimaryUser(discordId: string) {
+    if (discordId === null || discordId === undefined) {
+        throw new Error('Discord ID is not valid.');
+    }
+    const removedUser = await prisma.primaryUser.deleteMany({
+        where: {
+            discordId: discordId,
+        },
+    });
+
+    return removedUser;
 }
