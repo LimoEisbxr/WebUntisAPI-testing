@@ -3,12 +3,14 @@ import {
     SlashCommandBuilder,
     CommandInteractionOptionResolver,
     EmbedBuilder,
+    ComponentType,
 } from "discord.js";
 import { WebUntis } from "webuntis";
 import { getTimeTableForDate } from "../../WebUntisAPI/APIFunctions.js";
 import { getUntisUserData } from "../../Database/databaseFunctions.js";
 import { mergeLessons } from "../../WebUntisAPI/dataFormatting.js";
 import { generateActionRow } from "../../Discord_Bot/Utility/lessonsActionRow.js";
+import { client } from "../../index.js";
 
 export const data = new SlashCommandBuilder()
     .setName("timetabledate")
@@ -74,7 +76,7 @@ export async function execute(interaction: CommandInteraction) {
             return;
         }
 
-        timetable_today = await mergeLessons(untis, timetable_today);
+        timetable_today = await mergeLessons(timetable_today);
 
         // build embed
         let response = `Your timetable for ${date}:\n\n`;

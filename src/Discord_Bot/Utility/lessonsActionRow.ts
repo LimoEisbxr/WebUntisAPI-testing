@@ -22,7 +22,9 @@ export async function generateActionRow(
     timetable.forEach((lesson, index) => {
         let button = new ButtonBuilder()
             .setLabel(lesson.su[0].name)
-            .setCustomId(lesson.id.toString())
+            .setCustomId(
+                "LB-" + lesson.id.toString() + "-" + lesson.date.toString()
+            )
             .setStyle(ButtonStyle.Primary);
 
         button_list.push(button);

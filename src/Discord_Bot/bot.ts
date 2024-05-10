@@ -1,7 +1,8 @@
-import { Client } from "discord.js";
+import { Client, ComponentType } from "discord.js";
 import { config } from "./config.js";
 import { commands } from "./commands/index.js";
 import { deployCommands } from "./deploy-commands.js";
+import { handleLessonButton } from "./handlers/handleLessonButton.js";
 
 export function startBot() {
     const client = new Client({
@@ -37,6 +38,19 @@ export function startBot() {
         const { commandName } = interaction;
         if (commands[commandName as keyof typeof commands]) {
             commands[commandName as keyof typeof commands].execute(interaction);
+        }
+    });
+
+    client.on("interactionCreate", async (interaction) => {
+        if (!interaction.isMessageComponent()) return;
+
+        // Check if the interaction is a button
+        if (interaction.componentType === ComponentType.Button) {
+            // Get the customId of the button
+            const buttonId = interaction.customId;
+            if (buttonId.startsWith("LB-")) {
+                handleLessonButton(interaction);
+            }
         }
     });
 

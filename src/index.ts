@@ -1,6 +1,6 @@
 import { automaticCheck } from "./Discord_Bot/AutomaticMessages/automaticCheck.js";
 import { startBot } from "./Discord_Bot/bot.js";
 
-export const client = startBot();
+export const client = await startBot();
 
 automaticCheck();

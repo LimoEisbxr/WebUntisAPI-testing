@@ -6,11 +6,7 @@ export async function sortLessonsByStartTime(
     return lessons.sort((a, b) => a.startTime - b.startTime);
 }
 
-export async function mergeLessons(
-    untis: WebUntis,
-    lessons: Lesson[]
-): Promise<Lesson[]> {
-    await untis.login();
+export async function mergeLessons(lessons: Lesson[]): Promise<Lesson[]> {
     const mergedLessons: Lesson[] = [];
 
     // Sort lessons by start time
@@ -30,8 +26,6 @@ export async function mergeLessons(
             lessons[i + 1].startTime = lessons[i].startTime;
         }
     }
-
-    await untis.logout();
 
     return mergedLessons;
 }
