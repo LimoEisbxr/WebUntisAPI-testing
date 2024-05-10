@@ -1,19 +1,20 @@
-import { Client, ComponentType } from "discord.js";
-import { config } from "./config.js";
-import { commands } from "./commands/index.js";
-import { deployCommands } from "./deploy-commands.js";
-import { handleLessonButton } from "./handlers/handleLessonButton.js";
+import { Client, ComponentType, AutocompleteInteraction } from 'discord.js';
+import { config } from './config.js';
+import { commands } from './commands/index.js';
+import { deployCommands } from './deploy-commands.js';
+import { handleLessonButton } from './handlers/handleLessonButton.js';
+import { handleAutocomplete } from './handlers/handleAutoComplete.js';
 
 export function startBot() {
     const client = new Client({
-        intents: ["Guilds", "GuildMessages", "DirectMessages"],
+        intents: ['Guilds', 'GuildMessages', 'DirectMessages'],
     });
 
-    client.once("ready", () => {
-        console.log("Discord bot is ready! 🤖");
+    client.once('ready', () => {
+        console.log('Discord bot is ready! 🤖');
     });
 
-    client.once("ready", async () => {
+    client.once('ready', async () => {
         // Get all guilds the bot is connected to
         const guilds = client.guilds.cache;
 
@@ -23,34 +24,40 @@ export function startBot() {
         });
 
         console.log(
-            "Bot is ready and commands have been deployed to all guilds."
+            'Bot is ready and commands have been deployed to all guilds.'
         );
     });
 
-    client.on("guildCreate", async (guild) => {
+    client.on('guildCreate', async (guild) => {
         await deployCommands({ guildId: guild.id });
     });
 
-    client.on("interactionCreate", async (interaction) => {
+    client.on('interactionCreate', async (interaction) => {
         if (!interaction.isCommand()) {
             return;
         }
         const { commandName } = interaction;
-        if (commands[commandName as keyof typeof commands]) {
-            commands[commandName as keyof typeof commands].execute(interaction);
+        if (commands[commandName]) {
+            commands[commandName].execute(interaction);
         }
     });
 
-    client.on("interactionCreate", async (interaction) => {
+    client.on('interactionCreate', async (interaction) => {
         if (!interaction.isMessageComponent()) return;
 
         // Check if the interaction is a button
         if (interaction.componentType === ComponentType.Button) {
             // Get the customId of the button
             const buttonId = interaction.customId;
-            if (buttonId.startsWith("LB-")) {
+            if (buttonId.startsWith('LB-')) {
                 handleLessonButton(interaction);
             }
+        }
+    });
+
+    client.on('interactionCreate', async (interaction) => {
+        if (interaction.isAutocomplete()) {
+            handleAutocomplete(interaction);
         }
     });
 

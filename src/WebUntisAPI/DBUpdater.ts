@@ -26,7 +26,6 @@ export async function updateDB() {
 
     saveToDB('Teacher', renamedTeachers);
 
-    // console.log('Updating DB... allTeachers:', allTeachers);
     console.log('DB updated!');
 }
 

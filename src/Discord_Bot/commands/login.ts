@@ -5,6 +5,7 @@ import {
 } from 'discord.js';
 import { prisma } from './index.js';
 import { WebUntis } from 'webuntis';
+import { client } from '../../index.js';
 
 export const data = new SlashCommandBuilder()
     .setName('login')
@@ -20,6 +21,13 @@ export const data = new SlashCommandBuilder()
             .setName('password')
             .setDescription('Your WebUntis password. (WalziWalzWalz!!)')
             .setRequired(true)
+    )
+    .addStringOption((option) =>
+        option
+            .setName('class')
+            .setDescription('The class you are attending.')
+            .setRequired(true)
+            .setAutocomplete(true)
     )
     .addStringOption((option) =>
         option
