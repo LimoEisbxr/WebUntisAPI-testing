@@ -3,7 +3,7 @@ import {
     getRandomPrimaryUser,
     saveToDB,
 } from '../Database/databaseFunctions.js';
-import { getAllStudents, getAllTeachers } from './APIFunctions.js';
+import { getAllClasses, getAllTeachers } from './APIFunctions.js';
 
 export async function updateDB() {
     const primaryUser = await getRandomPrimaryUser();
@@ -26,6 +26,12 @@ export async function updateDB() {
 
     saveToDB('Teacher', renamedTeachers);
 
+    const allClasses = await getAllClasses(untis);
+
+    const renamedClasses = renameAndDeleteJsonData(allClasses);
+
+    saveToDB('Class', renamedClasses);
+
     console.log('DB updated!');
 }
 
@@ -33,5 +39,18 @@ function renameJsonTeacherData(data: any[]): any[] {
     return data.map((item) => {
         const { id: teacherId, dids, ...rest } = item;
         return { teacherId, ...rest };
+    });
+}
+
+function renameAndDeleteJsonData(data: any[]): any[] {
+    return data.map((item) => {
+        const {
+            id: classId,
+            name: classname,
+            active,
+            teacher1: teacher,
+            ...rest
+        } = item;
+        return { classId, classname, ...rest };
     });
 }

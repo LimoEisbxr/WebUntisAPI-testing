@@ -53,6 +53,10 @@ export async function execute(interaction: CommandInteraction) {
         interaction.options as CommandInteractionOptionResolver
     ).getString('password');
 
+    const className = (
+        interaction.options as CommandInteractionOptionResolver
+    ).getString('class');
+
     const schoolName = (
         interaction.options as CommandInteractionOptionResolver
     ).getString('schoolName');
@@ -61,9 +65,9 @@ export async function execute(interaction: CommandInteraction) {
         interaction.options as CommandInteractionOptionResolver
     ).getString('schoolURL');
 
-    if (!username || !password) {
+    if (!username || !password || !className) {
         await interaction.reply({
-            content: 'Please provide your WebUntis username and password.',
+            content: 'Please provide a username, password and class.',
             ephemeral: true,
         });
         return;
@@ -93,6 +97,7 @@ export async function execute(interaction: CommandInteraction) {
     try {
         await prisma.$connect();
 
+        // Upsert the user
         await prisma.untisUser.upsert({
             where: { discordId: interaction.user.id },
             create: {
@@ -102,6 +107,15 @@ export async function execute(interaction: CommandInteraction) {
                 untisPassword: password,
                 untisSchoolName: schoolName || defaultSchoolName,
                 untisUrl: schoolURL || defaultSchoolURL,
+                classes: {
+                    create: [
+                        {
+                            className: className,
+                            classId: 0,
+                            longName: '',
+                        },
+                    ],
+                },
             },
             update: {
                 discordUsername: interaction.user.username,
@@ -109,6 +123,25 @@ export async function execute(interaction: CommandInteraction) {
                 untisPassword: password,
                 untisSchoolName: schoolName || defaultSchoolName,
                 untisUrl: schoolURL || defaultSchoolURL,
+            },
+        });
+
+        // Fetch the class
+        const classToConnect = await prisma.class.findUnique({
+            where: { className: className },
+        });
+
+        if (!classToConnect) {
+            throw new Error(`Class with name ${className} not found`);
+        }
+
+        // Update the user to connect the class
+        await prisma.untisUser.update({
+            where: { discordId: interaction.user.id },
+            data: {
+                classes: {
+                    connect: [{ id: classToConnect.id }],
+                },
             },
         });
         await prisma.$disconnect();
