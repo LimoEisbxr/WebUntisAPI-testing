@@ -47,3 +47,29 @@ model primaryUser {
     UntisUser     UntisUser @relation(fields: [discordId], references: [discordId])
     primaryUserId String?
 }
+
+// model TimeTable {
+//     id    String @id @default(cuid())
+
+// }
+
+model Lesson {
+    id             String   @id @default(cuid())
+    lessonId       Int      @unique
+    lessonCode     String
+    date           DateTime
+    startTime      DateTime
+    endTime        DateTime
+    lessonState    String
+    rescheduleInfo String?
+    classId        Int
+    Class          Class    @relation(fields: [classId], references: [classId])
+}
+
+model Class {
+    id       String   @id @default(cuid())
+    classId  Int      @unique
+    name     String
+    longName String
+    lessons  Lesson[]
+}

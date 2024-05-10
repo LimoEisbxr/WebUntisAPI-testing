@@ -62,3 +62,42 @@ export async function getAllTeachers(untis: WebUntis): Promise<Teacher[]> {
 
     return teachers;
 }
+
+export async function getAllClasses(untis: WebUntis): Promise<any[]> {
+    await untis.login();
+
+    const currentSchoolyear = await untis.getCurrentSchoolyear();
+
+    const classes: any[] = await untis.getClasses(false, currentSchoolyear.id);
+    await untis.logout();
+
+    return classes;
+}
+
+export async function getAllStudents(untis: WebUntis): Promise<any[]> {
+    await untis.login();
+
+    const students: any[] = await untis.getStudents(false);
+    await untis.logout();
+
+    return students;
+}
+
+// export async function returnTheCurrentActiveUserClass(
+//     untis: WebUntis
+// ): Promise<any> {
+//     await untis.login();
+
+//     const timeTableToday = await untis.getOwnTimetableForToday();
+// }
+
+// export async function retrunAllValidAccounts() {}
+
+// export async function getTheLessonsForThisWeek(): Promise<Lesson[]> {
+//     await untis.login();
+
+//     const lessons: Lesson[] = await untis.getOwnTimetableForThisWeek();
+//     await untis.logout();
+
+//     return lessons;
+// }

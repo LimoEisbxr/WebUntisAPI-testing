@@ -1,12 +1,15 @@
-import { WebUntis } from "webuntis";
-import { getRandomPrimaryUser } from "../Database/databaseFunctions.js";
-import { getAllTeachers } from "./APIFunctions.js";
+import { WebUntis } from 'webuntis';
+import {
+    getRandomPrimaryUser,
+    saveToDB,
+} from '../Database/databaseFunctions.js';
+import { getAllStudents, getAllTeachers } from './APIFunctions.js';
 
 export async function updateDB() {
     const primaryUser = await getRandomPrimaryUser();
 
     if (primaryUser === false) {
-        console.log("No primary user found!");
+        console.log('No primary user found!');
         return;
     }
 
@@ -19,6 +22,17 @@ export async function updateDB() {
 
     const allTeachers = await getAllTeachers(untis);
 
-    console.log("Updating DB... allTeachers:", allTeachers);
-    console.log("DB updated!");
+    const renamedTeachers = renameJsonTeacherData(allTeachers);
+
+    saveToDB('Teacher', renamedTeachers);
+
+    // console.log('Updating DB... allTeachers:', allTeachers);
+    console.log('DB updated!');
+}
+
+function renameJsonTeacherData(data: any[]): any[] {
+    return data.map((item) => {
+        const { id: teacherId, dids, ...rest } = item;
+        return { teacherId, ...rest };
+    });
 }
