@@ -7,3 +7,4 @@ package-lock.json
 /dist
 src/Database/prisma/prismaData.db-journal
 src/Database/prisma/prismaData.db
+/src/Database/prisma/migrations
