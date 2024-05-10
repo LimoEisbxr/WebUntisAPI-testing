@@ -2,36 +2,36 @@ import {
     CommandInteraction,
     SlashCommandBuilder,
     CommandInteractionOptionResolver,
-} from "discord.js";
-import { prisma } from "./index.js";
-import { WebUntis } from "webuntis";
+} from 'discord.js';
+import { prisma } from './index.js';
+import { WebUntis } from 'webuntis';
 
 export const data = new SlashCommandBuilder()
-    .setName("login")
-    .setDescription("Login to WebUntis.")
+    .setName('login')
+    .setDescription('Login to WebUntis.')
     .addStringOption((option) =>
         option
-            .setName("username")
-            .setDescription("Your WebUntis username. (MaxiMust6969)")
+            .setName('username')
+            .setDescription('Your WebUntis username. (MaxiMust6969)')
             .setRequired(true)
     )
     .addStringOption((option) =>
         option
-            .setName("password")
-            .setDescription("Your WebUntis password. (WalziWalzWalz!!)")
+            .setName('password')
+            .setDescription('Your WebUntis password. (WalziWalzWalz!!)')
             .setRequired(true)
     )
     .addStringOption((option) =>
         option
-            .setName("schoolname")
-            .setDescription("The school you are attending. default: hhg-zw")
+            .setName('schoolname')
+            .setDescription('The school you are attending. default: hhg-zw')
             .setRequired(false)
     )
     .addStringOption((option) =>
         option
-            .setName("schoolurl")
+            .setName('schoolurl')
             .setDescription(
-                "The URL of the webuntis server. default: herakles.webuntis.com"
+                'The URL of the webuntis server. default: herakles.webuntis.com'
             )
             .setRequired(false)
     );
@@ -39,30 +39,30 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction: CommandInteraction) {
     const username = (
         interaction.options as CommandInteractionOptionResolver
-    ).getString("username");
+    ).getString('username');
 
     const password = (
         interaction.options as CommandInteractionOptionResolver
-    ).getString("password");
+    ).getString('password');
 
     const schoolName = (
         interaction.options as CommandInteractionOptionResolver
-    ).getString("schoolName");
+    ).getString('schoolName');
 
     const schoolURL = (
         interaction.options as CommandInteractionOptionResolver
-    ).getString("schoolURL");
+    ).getString('schoolURL');
 
     if (!username || !password) {
         await interaction.reply({
-            content: "Please provide your WebUntis username and password.",
+            content: 'Please provide your WebUntis username and password.',
             ephemeral: true,
         });
         return;
     }
 
-    const defaultSchoolName = "hhg-zw"; // replace with your default school name
-    const defaultSchoolURL = "herakles.webuntis.com"; // replace with your default school URL
+    const defaultSchoolName = 'hhg-zw'; // replace with your default school name
+    const defaultSchoolURL = 'herakles.webuntis.com'; // replace with your default school URL
 
     const untis = new WebUntis(
         schoolName || defaultSchoolName,
@@ -76,7 +76,7 @@ export async function execute(interaction: CommandInteraction) {
         await untis.logout();
     } catch (error) {
         await interaction.reply({
-            content: "Username or Password incorrect.",
+            content: 'Username or Password incorrect.',
             ephemeral: true,
         });
         return;
@@ -85,7 +85,7 @@ export async function execute(interaction: CommandInteraction) {
     try {
         await prisma.$connect();
 
-        const user = await prisma.untisUser.upsert({
+        await prisma.untisUser.upsert({
             where: { discordId: interaction.user.id },
             create: {
                 discordId: interaction.user.id,
@@ -107,14 +107,14 @@ export async function execute(interaction: CommandInteraction) {
     } catch (error) {
         console.error(error);
         await interaction.reply({
-            content: "An error occurred while trying to save your data.",
+            content: 'An error occurred while trying to save your data.',
             ephemeral: true,
         });
         return;
     }
 
     await interaction.reply({
-        content: "Successfully logged in to WebUntis API!",
+        content: 'Successfully logged in to WebUntis API!',
         ephemeral: true,
     });
 }

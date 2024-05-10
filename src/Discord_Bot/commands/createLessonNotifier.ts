@@ -2,31 +2,31 @@ import {
     CommandInteraction,
     SlashCommandBuilder,
     CommandInteractionOptionResolver,
-} from "discord.js";
-import { WebUntis } from "webuntis";
-import { getUntisUserData } from "../../Database/databaseFunctions.js";
-import { getTimeTableForDate } from "../../WebUntisAPI/APIFunctions.js";
+} from 'discord.js';
+import { WebUntis } from 'webuntis';
+import { getUntisUserData } from '../../Database/databaseFunctions.js';
+import { getTimeTableForDate } from '../../WebUntisAPI/APIFunctions.js';
 
 export const data = new SlashCommandBuilder()
-    .setName("createlessonnotifier")
-    .setDescription("Create a lesson notifier.")
+    .setName('createlessonnotifier')
+    .setDescription('Create a lesson notifier.')
     .addNumberOption((option) =>
         option
-            .setName("lessonstart")
-            .setDescription("The start time of the lesson.")
+            .setName('lessonstart')
+            .setDescription('The start time of the lesson.')
             .setRequired(true)
     )
     .addStringOption((option) =>
         option
-            .setName("lessondate")
-            .setDescription("The date of the lesson.")
+            .setName('lessondate')
+            .setDescription('The date of the lesson.')
             .setRequired(true)
     )
     .addNumberOption((option) =>
         option
-            .setName("notifytimeoffset")
+            .setName('notifytimeoffset')
             .setDescription(
-                "Time Offset of the notification to the start of the lesson."
+                'Time Offset of the notification to the start of the lesson.'
             )
             .setRequired(true)
     );
@@ -34,16 +34,25 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction: CommandInteraction) {
     const lessonStart = (
         interaction.options as CommandInteractionOptionResolver
-    ).getNumber("lessonstart");
+    ).getNumber('lessonstart');
 
     const lessonDateStr = (
         interaction.options as CommandInteractionOptionResolver
-    ).getString("lessondate");
+    ).getString('lessondate');
+
+    if (lessonDateStr === null) {
+        await interaction.reply({
+            content: 'Invalid lesson date.',
+            ephemeral: true,
+        });
+        return;
+    }
+
     const lessonDate = new Date(lessonDateStr);
 
     const notifyTimeOffset = (
         interaction.options as CommandInteractionOptionResolver
-    ).getNumber("notifytimeoffset");
+    ).getNumber('notifytimeoffset');
 
     let untis;
     try {
@@ -56,7 +65,7 @@ export async function execute(interaction: CommandInteraction) {
         );
     } catch (error) {
         await interaction.reply({
-            content: "You need to login first using /login.",
+            content: 'You need to login first using /login.',
             ephemeral: true,
         });
         return;
@@ -66,7 +75,7 @@ export async function execute(interaction: CommandInteraction) {
         untis.login();
     } catch (error) {
         await interaction.reply({
-            content: "Error logging in to WebUntis.",
+            content: 'Error logging in to WebUntis.',
             ephemeral: true,
         });
         return;
@@ -89,14 +98,14 @@ export async function execute(interaction: CommandInteraction) {
 
         if (!lesson) {
             await interaction.reply({
-                content: "No lesson found at that date and that time.",
+                content: 'No lesson found at that date and that time.',
                 ephemeral: true,
             });
             return;
         }
     } catch (error) {
         await interaction.reply({
-            content: "Error getting timetable.",
+            content: 'Error getting timetable.',
             ephemeral: true,
         });
         return;
