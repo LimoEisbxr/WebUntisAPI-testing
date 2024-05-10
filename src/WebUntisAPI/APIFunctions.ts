@@ -1,4 +1,4 @@
-import { Homework, Lesson, WebAPITimetable, WebUntis } from "webuntis";
+import { Homework, Lesson, Teacher, WebAPITimetable, WebUntis } from 'webuntis';
 
 export async function getTimetableForToday(untis: WebUntis): Promise<Lesson[]> {
     await untis.login();
@@ -53,4 +53,12 @@ export async function getHomeWorksFor(
     await untis.logout();
 
     return homework_today;
+}
+
+export async function getAllTeachers(untis: WebUntis): Promise<Teacher[]> {
+    await untis.login();
+    const teachers: Teacher[] = await untis.getTeachers();
+    await untis.logout();
+
+    return teachers;
 }
