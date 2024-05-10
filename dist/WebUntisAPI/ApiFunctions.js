@@ -1,7 +1,3 @@
-import { WebUntis } from "webuntis";
-export async function createUntis(user) {
-    return new WebUntis(user.schoolName, user.username, user.password, user.url);
-}
 export async function getTimetableForToday(untis) {
     await untis.login();
     const timetable_today = await untis.getOwnTimetableForToday();
@@ -25,5 +21,11 @@ export async function getTimeTableForWeek(untis, date, returnWithTeachers = fals
     const timetable = await untis.getOwnTimetableForWeek(date, formatId);
     await untis.logout();
     return timetable;
+}
+export async function getHomeWorksFor(untis, dateStart, dateEnd) {
+    await untis.login();
+    const homework_today = await untis.getHomeWorksFor(dateStart, dateEnd);
+    await untis.logout();
+    return homework_today;
 }
 //# sourceMappingURL=APIFunctions.js.map

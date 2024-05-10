@@ -3,10 +3,8 @@ import {
     SlashCommandBuilder,
     CommandInteractionOptionResolver,
     EmbedBuilder,
-    bold,
 } from "discord.js";
 import { WebUntis } from "webuntis";
-import { prisma } from "./index.js";
 import { getTimeTableForDate } from "../../WebUntisAPI/APIFunctions.js";
 import { getUntisUserData } from "../../Database/databaseFunctions.js";
 
@@ -23,17 +21,27 @@ export const data = new SlashCommandBuilder()
     );
 
 export async function execute(interaction: CommandInteraction) {
+    let untis;
+
     const date = (
         interaction.options as CommandInteractionOptionResolver
     ).getString("date");
 
-    let user = await getUntisUserData(interaction.user.id);
-    const untis = new WebUntis(
-        user.untisSchoolName,
-        user.untisUsername,
-        user.untisPassword,
-        user.untisUrl
-    );
+    try {
+        let user = await getUntisUserData(interaction.user.id);
+        untis = new WebUntis(
+            user.untisSchoolName,
+            user.untisUsername,
+            user.untisPassword,
+            user.untisUrl
+        );
+    } catch (error) {
+        await interaction.reply({
+            content: "You need to login first using /login.",
+            ephemeral: true,
+        });
+        return;
+    }
 
     try {
         await untis.login();
@@ -44,6 +52,7 @@ export async function execute(interaction: CommandInteraction) {
         });
         return;
     }
+
     try {
         const timetable_today = await getTimeTableForDate(
             untis,
@@ -78,9 +87,7 @@ export async function execute(interaction: CommandInteraction) {
         );
 
         timetable_today.forEach((lesson) => {
-            let teachers = lesson.te
-                .map((teacher) => teacher.longname)
-                .join(", ");
+            let teacher = lesson.te[0].longname;
 
             // Convert time to string, insert colon at appropriate position
             let startTime = lesson.startTime.toString();
@@ -95,7 +102,7 @@ export async function execute(interaction: CommandInteraction) {
                 `${startTime.padEnd(5, " ")}  ${endTime.padEnd(
                     5,
                     " "
-                )}  ${subject.padEnd(10, " ")}  ${teachers.padEnd(15, " ")}`
+                )}  ${subject.padEnd(10, " ")}  ${teacher.padEnd(15, " ")}`
             );
         });
 

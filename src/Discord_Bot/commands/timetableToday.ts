@@ -1,26 +1,22 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import { WebUntis } from "webuntis";
-import { prisma } from "./index.js";
 import { getTimetableForToday } from "../../WebUntisAPI/APIFunctions.js";
+import { getUntisUserData } from "../../Database/databaseFunctions.js";
 
 export const data = new SlashCommandBuilder()
     .setName("timetabletoday")
     .setDescription("Get your timetable for today.");
 
 export async function execute(interaction: CommandInteraction) {
-    let user;
+    let untis;
     try {
-        user = await prisma.untisUser.findUniqueOrThrow({
-            where: {
-                discordId: interaction.user.id,
-            },
-            select: {
-                untisSchoolName: true,
-                untisUsername: true,
-                untisPassword: true,
-                untisUrl: true,
-            },
-        });
+        let user = await getUntisUserData(interaction.user.id);
+        untis = new WebUntis(
+            user.untisSchoolName,
+            user.untisUsername,
+            user.untisPassword,
+            user.untisUrl
+        );
     } catch (error) {
         await interaction.reply({
             content: "You need to login first using /login.",
@@ -28,13 +24,6 @@ export async function execute(interaction: CommandInteraction) {
         });
         return;
     }
-
-    const untis = new WebUntis(
-        user.untisSchoolName,
-        user.untisUsername,
-        user.untisPassword,
-        user.untisUrl
-    );
 
     try {
         await untis.login();

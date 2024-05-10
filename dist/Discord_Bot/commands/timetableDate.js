@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, } from "discord.js";
 import { WebUntis } from "webuntis";
-import { getTimeTableForDate, } from "../../WebUntisAPI/APIFunctions.js";
+import { getTimeTableForDate } from "../../WebUntisAPI/APIFunctions.js";
 import { getUntisUserData } from "../../Database/databaseFunctions.js";
 export const data = new SlashCommandBuilder()
     .setName("timetabledate")
@@ -10,9 +10,19 @@ export const data = new SlashCommandBuilder()
     .setDescription("The date you want to get the timetable for. (YYYY-MM-DD)")
     .setRequired(true));
 export async function execute(interaction) {
+    let untis;
     const date = interaction.options.getString("date");
-    let user = await getUntisUserData(interaction.user.id);
-    const untis = new WebUntis(user.untisSchoolName, user.untisUsername, user.untisPassword, user.untisUrl);
+    try {
+        let user = await getUntisUserData(interaction.user.id);
+        untis = new WebUntis(user.untisSchoolName, user.untisUsername, user.untisPassword, user.untisUrl);
+    }
+    catch (error) {
+        await interaction.reply({
+            content: "You need to login first using /login.",
+            ephemeral: true,
+        });
+        return;
+    }
     try {
         await untis.login();
     }
@@ -44,16 +54,14 @@ export async function execute(interaction) {
         let tableRows = [];
         tableRows.push(`${titleStartTime}  ${titleEndTime}  ${titleSubject}  ${titleTeachers}`);
         timetable_today.forEach((lesson) => {
-            let teachers = lesson.te
-                .map((teacher) => teacher.longname)
-                .join(", ");
+            let teacher = lesson.te[0].longname;
             // Convert time to string, insert colon at appropriate position
             let startTime = lesson.startTime.toString();
             startTime = startTime.slice(0, -2) + ":" + startTime.slice(-2);
             let endTime = lesson.endTime.toString();
             endTime = endTime.slice(0, -2) + ":" + endTime.slice(-2);
             let subject = lesson.su[0].name;
-            tableRows.push(`${startTime.padEnd(5, " ")}  ${endTime.padEnd(5, " ")}  ${subject.padEnd(10, " ")}  ${teachers.padEnd(15, " ")}`);
+            tableRows.push(`${startTime.padEnd(5, " ")}  ${endTime.padEnd(5, " ")}  ${subject.padEnd(10, " ")}  ${teacher.padEnd(15, " ")}`);
         });
         table = tableRows.join("\n");
         let embed = new EmbedBuilder()
