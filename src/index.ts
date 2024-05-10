@@ -1,6 +1,6 @@
-import { automaticCheck } from './Discord_Bot/AutomaticMessages/automaticCheck.js';
-import { startBot } from './Discord_Bot/bot.js';
+import { automaticCheck } from "./Discord_Bot/AutomaticMessages/automaticCheck.js";
+import { startBot } from "./Discord_Bot/bot.js";
 
-startBot();
+export const client = startBot();
 
 automaticCheck();

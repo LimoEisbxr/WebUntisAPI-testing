@@ -41,4 +41,6 @@ export function startBot() {
     });
 
     client.login(config.DISCORD_TOKEN);
+
+    return client;
 }
