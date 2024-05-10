@@ -11,14 +11,15 @@ datasource db {
 }
 
 model UntisUser {
-    id              String   @id @default(cuid())
-    createdAt       DateTime @default(now())
-    discordId       String   @unique
+    id              String       @id @default(cuid())
+    createdAt       DateTime     @default(now())
+    discordId       String       @unique
     discordUsername String
     untisSchoolName String
     untisUsername   String
     untisPassword   String
     untisUrl        String
+    primaryUser     primaryUser?
 }
 
 model lessonNotifier {
@@ -28,4 +29,21 @@ model lessonNotifier {
     channelId          String
     lessonStart        DateTime
     reminderTimeOffset Int
+}
+
+model Teacher {
+    id        String  @id @default(cuid())
+    teacherId Int     @unique
+    name      String
+    foreName  String
+    longName  String
+    title     String
+    active    Boolean
+}
+
+model primaryUser {
+    id            String    @id @default(cuid())
+    discordId     String    @unique
+    untisUser     UntisUser @relation(fields: [discordId], references: [discordId])
+    primaryUserId String?
 }

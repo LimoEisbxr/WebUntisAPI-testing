@@ -5,3 +5,5 @@ src/Database/prisma/userData.db
 /sample_output
 package-lock.json
 /dist
+src/Database/prisma/prismaData.db-journal
+src/Database/prisma/prismaData.db
