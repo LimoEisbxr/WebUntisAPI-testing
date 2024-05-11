@@ -37,8 +37,10 @@ export function startBot() {
             return;
         }
         const { commandName } = interaction;
-        if (commands[commandName]) {
-            commands[commandName].execute(interaction);
+        if ((commands as { [key: string]: any })[commandName]) {
+            (commands as { [key: string]: any })[commandName].execute(
+                interaction
+            );
         }
     });
 

@@ -1,7 +1,7 @@
-import { WebUntis } from "webuntis";
-import { PrismaClient } from "@prisma/client";
+import { WebUntis } from 'webuntis';
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient() as any;
+export const prisma = new PrismaClient() as any;
 
 export async function getUntisUserData(discordId: string) {
     return prisma.untisUser.findUniqueOrThrow({
@@ -40,16 +40,20 @@ export async function getRandomPrimaryUser(): Promise<any | boolean> {
     return primaryUsers[Math.floor(Math.random() * primaryUsers.length)];
 }
 
-export async function saveToDB(modelName: string, data: any[]): Promise<void> {
+export async function saveToDB(
+    modelName: string,
+    uniqueIdentifier: string,
+    data: any[]
+): Promise<void> {
     try {
         for (const item of data) {
             await prisma[modelName].upsert({
-                where: { teacherId: item.teacherId }, // You need to replace 'id' with the unique identifier of your model
+                where: { [uniqueIdentifier]: item[uniqueIdentifier] },
                 update: item,
                 create: item,
             });
         }
-        console.log("Data saved successfully");
+        console.log('Data saved successfully');
     } catch (error) {
         console.error(
             `An error occurred while saving the data to ${modelName}:`,
@@ -67,17 +71,25 @@ export async function getAllUntisAccounts(
 ): Promise<any[]> {
     if (onlyDifferentClasses) {
         return prisma.untisUser.findMany({
-            distinct: ["untisSchoolName"],
+            distinct: ['untisSchoolName'],
         });
     } else {
         return prisma.untisUser.findMany();
     }
 }
 
-export async function getTeacherData(teacherId: number): Promise<any> {
-    return prisma.teacher.findUnique({
+export async function readDB(modelName: string): Promise<any[]> {
+    return prisma[modelName].findMany();
+}
+
+export async function getDataFromTableByKey(
+    modelName: string,
+    uniqueKey: string,
+    keyValue: any
+): Promise<any[]> {
+    return prisma[modelName].findMany({
         where: {
-            teacherId: teacherId,
+            [uniqueKey]: keyValue,
         },
     });
 }

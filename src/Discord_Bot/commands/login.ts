@@ -5,7 +5,7 @@ import {
 } from 'discord.js';
 import { prisma } from './index.js';
 import { WebUntis } from 'webuntis';
-import { client } from '../../index.js';
+import { getAutocompleteChoices } from '../handlers/handleAutocompleteChoices.js';
 
 export const data = new SlashCommandBuilder()
     .setName('login')
@@ -25,7 +25,7 @@ export const data = new SlashCommandBuilder()
     .addStringOption((option) =>
         option
             .setName('class')
-            .setDescription('The class you are attending.')
+            .setDescription('The class you are attending. (10b)')
             .setRequired(true)
             .setAutocomplete(true)
     )
@@ -53,6 +53,10 @@ export async function execute(interaction: CommandInteraction) {
         interaction.options as CommandInteractionOptionResolver
     ).getString('password');
 
+    const className = (
+        interaction.options as CommandInteractionOptionResolver
+    ).getString('class');
+
     const schoolName = (
         interaction.options as CommandInteractionOptionResolver
     ).getString('schoolName');
@@ -61,9 +65,9 @@ export async function execute(interaction: CommandInteraction) {
         interaction.options as CommandInteractionOptionResolver
     ).getString('schoolURL');
 
-    if (!username || !password) {
+    if (!username || !password || !className) {
         await interaction.reply({
-            content: 'Please provide your WebUntis username and password.',
+            content: 'Please provide a username, password and class.',
             ephemeral: true,
         });
         return;
@@ -90,9 +94,22 @@ export async function execute(interaction: CommandInteraction) {
         return;
     }
 
+    // check if the className is valid
+
+    const choices = await getAutocompleteChoices();
+
+    if (!choices.map((choice) => choice.name).includes(className)) {
+        await interaction.reply({
+            content: 'Please provide a valid class name.',
+            ephemeral: true,
+        });
+        return;
+    }
+
     try {
         await prisma.$connect();
 
+        // Upsert the user
         await prisma.untisUser.upsert({
             where: { discordId: interaction.user.id },
             create: {
@@ -111,6 +128,26 @@ export async function execute(interaction: CommandInteraction) {
                 untisUrl: schoolURL || defaultSchoolURL,
             },
         });
+
+        // Fetch the class
+        const classToConnect = await prisma.class.findUnique({
+            where: { className: className },
+        });
+
+        if (!classToConnect) {
+            throw new Error(`Class with name ${className} not found`);
+        }
+
+        // Connect the class to the user
+        await prisma.untisUser.update({
+            where: { discordId: interaction.user.id },
+            data: {
+                class: {
+                    connect: { className: className },
+                },
+            },
+        });
+
         await prisma.$disconnect();
     } catch (error) {
         console.error(error);
