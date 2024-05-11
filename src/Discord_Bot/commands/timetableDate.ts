@@ -92,7 +92,7 @@ export async function execute(interaction: CommandInteraction) {
             `${titleStartTime}  ${titleEndTime}  ${titleSubject}  ${titleTeachers}`
         );
 
-        timetable_today.forEach(async (lesson) => {
+        for (const lesson of timetable_today) {
             let teacher = lesson.te[0].longname;
 
             // Convert time to string, insert colon at appropriate position
@@ -106,7 +106,7 @@ export async function execute(interaction: CommandInteraction) {
                     " "
                 )}  ${subject.padEnd(10, " ")}  ${teacher.padEnd(15, " ")}`
             );
-        });
+        }
 
         table = tableRows.join("\n");
 
