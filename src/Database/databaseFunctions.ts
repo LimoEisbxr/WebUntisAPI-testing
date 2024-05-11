@@ -93,3 +93,11 @@ export async function getDataFromTableByKey(
         },
     });
 }
+
+export async function getTeacherData(teacherId: number): Promise<any> {
+    return prisma.teacher.findUnique({
+        where: {
+            teacherId: teacherId,
+        },
+    });
+}
