@@ -24,7 +24,7 @@ export const data = new SlashCommandBuilder()
     .addStringOption((option) =>
         option
             .setName('class')
-            .setDescription('The class you are attending.')
+            .setDescription('The class you are attending. (10b)')
             .setRequired(true)
             .setAutocomplete(true)
     )

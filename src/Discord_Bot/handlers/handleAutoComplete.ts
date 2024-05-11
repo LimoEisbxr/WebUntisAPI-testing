@@ -1,24 +1,18 @@
 import { AutocompleteInteraction, Interaction } from 'discord.js';
+import { getAutocompleteChoices } from './handleAutocompleteChoices.js';
 
 export async function handleAutocomplete(interaction: any) {
     console.log('Autocomplete Interaction');
-    const choices = [
-        { name: '5AHIF', value: '5AHIF' },
-        { name: '5BHIF', value: '5BHIF' },
-        { name: '5CHIF', value: '5CHIF' },
-        { name: '5DHIF', value: '5DHIF' },
-        { name: '5EHIF', value: '5EHIF' },
-        { name: '5FHIF', value: '5FHIF' },
-        { name: '5GHIF', value: '5GHIF' },
-        { name: '5HHIF', value: '5HHIF' },
-        { name: '5IHIF', value: '5IHIF' },
-        { name: '5JHIF', value: '5JHIF' },
-    ];
+    const choices = await getAutocompleteChoices();
 
-    console.log(interaction.commandName);
+    // console.log('Choices:', choices);
+
+    // console.log('Interaction:', interaction.commandName);
     if (interaction.commandName === 'login') {
         // Use the type assertion variable
         const focusedOption = interaction.options.getFocused();
+
+        // console.log('Focused Option:', focusedOption);
 
         if (typeof focusedOption !== 'string') {
             console.error('focusedOption is not a string:', focusedOption);
@@ -26,6 +20,7 @@ export async function handleAutocomplete(interaction: any) {
         }
 
         const filteredOptions = choices.filter((choice) => {
+            // console.log('Choice:', choice);
             return choice.name
                 .toLowerCase()
                 .startsWith(focusedOption.toLowerCase());
@@ -40,7 +35,7 @@ export async function handleAutocomplete(interaction: any) {
             };
         });
 
-        console.log(results);
+        // console.log(results);
 
         interaction.respond(results.slice(0, 25)).catch(() => {});
     }

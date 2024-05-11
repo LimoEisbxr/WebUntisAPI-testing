@@ -77,3 +77,7 @@ export async function getAllUntisAccounts(
         return prisma.untisUser.findMany();
     }
 }
+
+export async function readDB(modelName: string): Promise<any[]> {
+    return prisma[modelName].findMany();
+}
