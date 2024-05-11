@@ -5,6 +5,7 @@ import {
 } from 'discord.js';
 import { prisma } from './index.js';
 import { WebUntis } from 'webuntis';
+import { getAutocompleteChoices } from '../handlers/handleAutocompleteChoices.js';
 
 export const data = new SlashCommandBuilder()
     .setName('login')
@@ -93,6 +94,18 @@ export async function execute(interaction: CommandInteraction) {
         return;
     }
 
+    // check if the className is valid
+
+    const choices = await getAutocompleteChoices();
+
+    if (!choices.map((choice) => choice.name).includes(className)) {
+        await interaction.reply({
+            content: 'Please provide a valid class name.',
+            ephemeral: true,
+        });
+        return;
+    }
+
     try {
         await prisma.$connect();
 
@@ -124,6 +137,16 @@ export async function execute(interaction: CommandInteraction) {
         if (!classToConnect) {
             throw new Error(`Class with name ${className} not found`);
         }
+
+        // Connect the class to the user
+        await prisma.untisUser.update({
+            where: { discordId: interaction.user.id },
+            data: {
+                class: {
+                    connect: { className: className },
+                },
+            },
+        });
 
         await prisma.$disconnect();
     } catch (error) {

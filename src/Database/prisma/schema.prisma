@@ -20,7 +20,8 @@ model UntisUser {
     untisPassword   String
     untisUrl        String
     primaryUser     primaryUser?
-    class           Class?
+    class           Class?       @relation(fields: [className], references: [className])
+    className       String?
 }
 
 model lessonNotifier {
@@ -64,13 +65,12 @@ model Teacher {
 }
 
 model Class {
-    id          String     @id @default(cuid())
-    classId     Int        @unique
-    className   String     @unique
-    longName    String
-    lessons     Lesson[]
-    untisUser   UntisUser? @relation(fields: [untisUserId], references: [id])
-    untisUserId String?    @unique @map("untis_user_id")
-    teacher     Teacher?   @relation(fields: [teacherId], references: [teacherId])
-    teacherId   Int?       @map("teacher_id")
+    id        String      @id @default(cuid())
+    classId   Int         @unique
+    className String      @unique
+    longName  String
+    lessons   Lesson[]
+    untisUser UntisUser[]
+    teacher   Teacher?    @relation(fields: [teacherId], references: [teacherId])
+    teacherId Int?        @map("teacher_id")
 }

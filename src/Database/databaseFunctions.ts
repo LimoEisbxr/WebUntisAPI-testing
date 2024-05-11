@@ -81,3 +81,15 @@ export async function getAllUntisAccounts(
 export async function readDB(modelName: string): Promise<any[]> {
     return prisma[modelName].findMany();
 }
+
+export async function getDataFromTableByKey(
+    modelName: string,
+    uniqueKey: string,
+    keyValue: any
+): Promise<any[]> {
+    return prisma[modelName].findMany({
+        where: {
+            [uniqueKey]: keyValue,
+        },
+    });
+}
