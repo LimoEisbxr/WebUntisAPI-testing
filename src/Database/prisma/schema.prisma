@@ -20,7 +20,7 @@ model UntisUser {
     untisPassword   String
     untisUrl        String
     primaryUser     primaryUser?
-    classes         Class[]
+    class           Class?
 }
 
 model lessonNotifier {
@@ -32,27 +32,12 @@ model lessonNotifier {
     reminderTimeOffset Int
 }
 
-model Teacher {
-    id        String  @id @default(cuid())
-    teacherId Int     @unique
-    name      String
-    foreName  String
-    longName  String
-    title     String
-    active    Boolean
-}
-
 model primaryUser {
     id            String    @id @default(cuid())
     discordId     String    @unique
     UntisUser     UntisUser @relation(fields: [discordId], references: [discordId])
     primaryUserId String?
 }
-
-// model TimeTable {
-//     id    String @id @default(cuid())
-
-// }
 
 model Lesson {
     id             String   @id @default(cuid())
@@ -67,13 +52,25 @@ model Lesson {
     Class          Class    @relation(fields: [classId], references: [classId])
 }
 
+model Teacher {
+    id        String  @id @default(cuid())
+    teacherId Int     @unique
+    name      String
+    foreName  String
+    longName  String
+    title     String
+    active    Boolean
+    classes   Class[]
+}
+
 model Class {
-    id          String    @id @default(cuid())
-    classId     Int       @unique
-    className   String    @unique
+    id          String     @id @default(cuid())
+    classId     Int        @unique
+    className   String     @unique
     longName    String
     lessons     Lesson[]
-    untisUser   UntisUser @relation(fields: [untisUserId], references: [id])
-    untisUserId String    @map("untis_user_id")
-    teacher     Int
+    untisUser   UntisUser? @relation(fields: [untisUserId], references: [id])
+    untisUserId String?    @unique @map("untis_user_id")
+    teacher     Teacher?   @relation(fields: [teacherId], references: [teacherId])
+    teacherId   Int?       @map("teacher_id")
 }

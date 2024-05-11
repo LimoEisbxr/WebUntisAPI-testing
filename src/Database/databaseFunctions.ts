@@ -1,7 +1,7 @@
 import { WebUntis } from 'webuntis';
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient() as any;
+export const prisma = new PrismaClient() as any;
 
 export async function getUntisUserData(discordId: string) {
     return prisma.untisUser.findUniqueOrThrow({
@@ -40,11 +40,15 @@ export async function getRandomPrimaryUser(): Promise<any | boolean> {
     return primaryUsers[Math.floor(Math.random() * primaryUsers.length)];
 }
 
-export async function saveToDB(modelName: string, data: any[]): Promise<void> {
+export async function saveToDB(
+    modelName: string,
+    uniqueIdentifier: string,
+    data: any[]
+): Promise<void> {
     try {
         for (const item of data) {
             await prisma[modelName].upsert({
-                where: { teacherId: item.teacherId }, // You need to replace 'id' with the unique identifier of your model
+                where: { [uniqueIdentifier]: item[uniqueIdentifier] },
                 update: item,
                 create: item,
             });

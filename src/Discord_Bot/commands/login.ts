@@ -5,7 +5,6 @@ import {
 } from 'discord.js';
 import { prisma } from './index.js';
 import { WebUntis } from 'webuntis';
-import { client } from '../../index.js';
 
 export const data = new SlashCommandBuilder()
     .setName('login')
@@ -107,15 +106,6 @@ export async function execute(interaction: CommandInteraction) {
                 untisPassword: password,
                 untisSchoolName: schoolName || defaultSchoolName,
                 untisUrl: schoolURL || defaultSchoolURL,
-                classes: {
-                    create: [
-                        {
-                            className: className,
-                            classId: 0,
-                            longName: '',
-                        },
-                    ],
-                },
             },
             update: {
                 discordUsername: interaction.user.username,
@@ -135,15 +125,6 @@ export async function execute(interaction: CommandInteraction) {
             throw new Error(`Class with name ${className} not found`);
         }
 
-        // Update the user to connect the class
-        await prisma.untisUser.update({
-            where: { discordId: interaction.user.id },
-            data: {
-                classes: {
-                    connect: [{ id: classToConnect.id }],
-                },
-            },
-        });
         await prisma.$disconnect();
     } catch (error) {
         console.error(error);
