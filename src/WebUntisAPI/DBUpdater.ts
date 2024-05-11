@@ -6,20 +6,25 @@ import {
 import { getAllClasses, getAllTeachers } from './APIFunctions.js';
 import { PrismaClient } from '@prisma/client';
 
-export async function updateDB() {
-    const primaryUser = await getRandomPrimaryUser();
+export async function updateDB(untisUser?: WebUntis): Promise<void> {
+    let untis: undefined | WebUntis = undefined;
+    if (!untisUser) {
+        const primaryUser = await getRandomPrimaryUser();
 
-    if (primaryUser === false) {
-        console.log('No primary user found!');
-        return;
+        if (primaryUser === false) {
+            console.log('No primary user found!');
+            return;
+        }
+
+        untis = new WebUntis(
+            primaryUser.UntisUser.untisSchoolName,
+            primaryUser.UntisUser.untisUsername,
+            primaryUser.UntisUser.untisPassword,
+            primaryUser.UntisUser.untisUrl
+        );
+    } else {
+        untis = untisUser;
     }
-
-    const untis = new WebUntis(
-        primaryUser.UntisUser.untisSchoolName,
-        primaryUser.UntisUser.untisUsername,
-        primaryUser.UntisUser.untisPassword,
-        primaryUser.UntisUser.untisUrl
-    );
 
     const allTeachers = await getAllTeachers(untis);
 
