@@ -121,3 +121,21 @@ export async function getAllLessonsForAClass(
 
     return allLessonsinRange;
 }
+
+export async function getAllRooms(untis: WebUntis): Promise<any[]> {
+    await untis.login();
+
+    const rooms: any[] = await untis.getRooms();
+    await untis.logout();
+
+    return rooms;
+}
+
+export async function getAllSubjects(untis: WebUntis): Promise<any[]> {
+    await untis.login();
+
+    const subjects: any[] = await untis.getSubjects();
+    await untis.logout();
+
+    return subjects;
+}

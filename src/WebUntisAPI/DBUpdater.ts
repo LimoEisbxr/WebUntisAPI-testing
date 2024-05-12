@@ -8,6 +8,7 @@ import {
 import {
     getAllClasses,
     getAllLessonsForAClass,
+    getAllSubjects,
     getAllTeachers,
 } from './APIFunctions.js';
 import { PrismaClient } from '@prisma/client';
@@ -82,6 +83,10 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
         ]);
 
         console.log('### ro ###: ', lessonData[2].ro);
+        console.log('### kl ###: ', lessonData[2].kl);
+        console.log('### subject ###: ', lessonData[4].su);
+
+        // console.log('allSubjects: ', await getAllSubjects(untis));
 
         console.log('lessonData: ', lessonData);
 
@@ -172,20 +177,6 @@ const mapToLessonModel = (obj: any): LessonModel => {
           )
         : new Date();
 
-    // console.log('obj.kl: ', obj.kl);
-    const kl = obj.kl
-        ? obj.kl.map(
-              (klObj: {
-                  name: { toString: () => any };
-                  longname: { toString: () => any };
-              }) => ({
-                  name: klObj.name.toString(),
-                  longName: klObj.longname.toString(),
-                  lessonId: obj.id.toString(),
-              })
-          )
-        : [];
-
     return {
         id: obj.id ? obj.id.toString() : '',
         lessonId: obj.lsnumber || 0,
@@ -198,11 +189,9 @@ const mapToLessonModel = (obj: any): LessonModel => {
         lessonState: obj.lessonState || 'Some State',
         rescheduleInfo: obj.rescheduleInfo || null,
         classId: obj.classId || 1,
-        kl: {
-            create: kl,
-        },
+        kl: obj.kl || [],
         teacher: obj.te || [],
-        room: obj.ro || [],
+        ro: obj.ro || [],
         subject: obj.su || [],
         sg: obj.sg || '',
     };
@@ -218,29 +207,72 @@ async function saveLessonsToDB(
             console.log('item: ', item);
             console.log('item.kl: ', item.kl);
 
-            // Extract kl and teacher data and remove them from item
+            // Extract kl, teacher, class, room, and subject data and remove them from item
             const klData = item.kl;
             delete item.kl;
 
             const teacherData = item.teacher;
             delete item.teacher;
 
+            const classData = klData[0].id; // Assuming classId is the id of the first kl object
+            delete item.classId; // If classId is a property of item, delete it
+
+            let roomData;
+            if (item.ro && item.ro.length > 0) {
+                roomData = item.ro[0].id; // Assuming roomId is the id of the first ro object
+                delete item.roomId; // If roomId is a property of item, delete it
+            }
+            delete item.ro; // Always delete ro from item
+
+            let subjectData;
+            if (item.subject && item.subject.length > 0) {
+                subjectData = item.subject[0].id; // Assuming subjectId is the id of the first subject object
+                delete item.subjectId; // If subjectId is a property of item, delete it
+            }
+            delete item.subject; // Always delete subject from item
+
             // First, upsert the Lesson
             const upsertedLesson = await prisma[modelName].upsert({
                 where: { [uniqueIdentifier]: item[uniqueIdentifier] },
-                update: { ...item, teacherId: teacherData[0].id },
-                create: { ...item, teacherId: teacherData[0].id },
+                update: {
+                    ...item,
+                    teacherId: teacherData[0].id,
+                    classId: classData,
+                    roomId: roomData,
+                    subjectId: subjectData,
+                },
+                create: {
+                    ...item,
+                    teacherId: teacherData[0].id,
+                    classId: classData,
+                    roomId: roomData,
+                    subjectId: subjectData,
+                    Class: {
+                        connect: {
+                            classId: classData,
+                        },
+                    },
+                    Teacher: {
+                        connect: {
+                            teacherId: teacherData[0].id,
+                        },
+                    },
+                    ...(roomData && {
+                        Room: {
+                            connect: {
+                                roomId: roomData,
+                            },
+                        },
+                    }),
+                    ...(subjectData && {
+                        Subject: {
+                            connect: {
+                                id: subjectData,
+                            },
+                        },
+                    }),
+                },
             });
-
-            // Then, upsert the Kl items with the lessonId set to the upserted Lesson's id
-            for (const klItem of klData.create) {
-                klItem.lessonId = upsertedLesson.id;
-                await prisma.Kl.upsert({
-                    where: { [uniqueIdentifier]: klItem[uniqueIdentifier] },
-                    update: klItem,
-                    create: klItem,
-                });
-            }
         }
         console.log('Data saved successfully');
     } catch (error) {
@@ -250,7 +282,6 @@ async function saveLessonsToDB(
         );
     }
 }
-
 interface KlCreateInput {
     create: { name: string; longName: string; lessonId: string }[];
 }
@@ -265,9 +296,9 @@ interface LessonModel {
     lessonState: string;
     rescheduleInfo: null | RescheduleInfo;
     classId: number;
-    kl: KlCreateInput | null;
+    kl: any[];
     teacher: any[];
-    room: any[];
+    ro: any[];
     subject: any[];
     sg: string;
 }

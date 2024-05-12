@@ -41,38 +41,32 @@ model primaryUser {
 }
 
 model Lesson {
-    id             String    @id @default(cuid())
-    lessonId       Int       @unique
-    lessonCode     String
+    id             String   @id @default(cuid())
+    lessonId       Int      @unique
+    lessonCode     String?
     date           DateTime
     startTime      DateTime
     endTime        DateTime
-    lessonState    String
+    lessonState    String?
     rescheduleInfo String?
     classId        Int
-    Class          Class     @relation(fields: [classId], references: [classId])
-    kl             Kl[]
-    teacherId      String?
-    teacher        Teacher?  @relation(fields: [teacherId], references: [id])
-    subject        Subject[]
-    sg             String
-    roomId         Int
-    room           Room      @relation(fields: [roomId], references: [roomId])
-}
-
-model Kl {
-    id       String  @id @default(cuid())
-    name     String
-    longName String?
-    lessonId String // Ensure this is defined and matches the type of `id` in `Lesson` model
-    Lesson   Lesson  @relation(fields: [lessonId], references: [id])
+    Class          Class    @relation(fields: [classId], references: [classId])
+    teacherId      Int?
+    teacher        Teacher? @relation(fields: [teacherId], references: [teacherId])
+    sg             String?
+    roomId         Int?
+    room           Room?    @relation(fields: [roomId], references: [roomId])
+    subjectId      String?
+    subject        Subject? @relation(fields: [subjectId], references: [id])
 }
 
 model Subject {
-    id       String  @id @default(cuid())
-    value    String?
-    lesson   Lesson  @relation(fields: [lessonId], references: [id])
-    lessonId String
+    id            String   @id @default(cuid())
+    subjectId     Int      @unique
+    name          String
+    longName      String?
+    alternateName String?
+    lessons       Lesson[]
 }
 
 model Teacher {
@@ -81,8 +75,8 @@ model Teacher {
     name      String
     foreName  String
     longName  String
-    title     String
-    active    Boolean
+    title     String?
+    active    Boolean?
     classes   Class[]
     lessons   Lesson[]
 }
@@ -94,8 +88,8 @@ model Class {
     longName  String?
     lessons   Lesson[]
     untisUser UntisUser[]
-    teacher   Teacher?    @relation(fields: [teacherId], references: [teacherId])
     teacherId Int?        @map("teacher_id")
+    teacher   Teacher?    @relation(fields: [teacherId], references: [teacherId])
 }
 
 model Room {
