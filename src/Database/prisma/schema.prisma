@@ -41,8 +41,8 @@ model primaryUser {
 }
 
 model Lesson {
-    id             String   @id @default(cuid())
-    lessonId       Int      @unique
+    id             String    @id @default(cuid())
+    lessonId       Int       @unique
     lessonCode     String
     date           DateTime
     startTime      DateTime
@@ -50,7 +50,34 @@ model Lesson {
     lessonState    String
     rescheduleInfo String?
     classId        Int
-    Class          Class    @relation(fields: [classId], references: [classId])
+    Class          Class     @relation(fields: [classId], references: [classId])
+    kl             Kl[]
+    teacher        Teacher[]
+    ro             Ro[]
+    subject        Subject[]
+    sg             String
+}
+
+model Kl {
+    id       String  @id @default(cuid())
+    name     String
+    longName String?
+    lessonId String // Ensure this is defined and matches the type of `id` in `Lesson` model
+    Lesson   Lesson  @relation(fields: [lessonId], references: [id])
+}
+
+model Ro {
+    id       String  @id @default(cuid())
+    value    String?
+    lesson   Lesson  @relation(fields: [lessonId], references: [id])
+    lessonId String
+}
+
+model Subject {
+    id       String  @id @default(cuid())
+    value    String?
+    lesson   Lesson  @relation(fields: [lessonId], references: [id])
+    lessonId String
 }
 
 model Teacher {
@@ -62,13 +89,15 @@ model Teacher {
     title     String
     active    Boolean
     classes   Class[]
+    Lesson    Lesson? @relation(fields: [lessonId], references: [id])
+    lessonId  String?
 }
 
 model Class {
     id        String      @id @default(cuid())
     classId   Int         @unique
     className String      @unique
-    longName  String
+    longName  String?
     lessons   Lesson[]
     untisUser UntisUser[]
     teacher   Teacher?    @relation(fields: [teacherId], references: [teacherId])

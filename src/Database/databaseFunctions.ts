@@ -1,5 +1,5 @@
 import { WebUntis } from 'webuntis';
-import { PrismaClient } from '@prisma/client';
+import { Class, PrismaClient } from '@prisma/client';
 
 export const prisma = new PrismaClient() as any;
 
@@ -98,6 +98,19 @@ export async function getTeacherData(teacherId: number): Promise<any> {
     return prisma.teacher.findUnique({
         where: {
             teacherId: teacherId,
+        },
+    });
+}
+
+export async function getAllRegisteredClasses(): Promise<Class[]> {
+    return prisma.class.findMany({
+        where: {
+            untisUser: {
+                some: {},
+            },
+        },
+        include: {
+            untisUser: true,
         },
     });
 }
