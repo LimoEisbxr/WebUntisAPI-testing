@@ -52,10 +52,12 @@ model Lesson {
     classId        Int
     Class          Class     @relation(fields: [classId], references: [classId])
     kl             Kl[]
-    teacher        Teacher[]
-    ro             Ro[]
+    teacherId      String?
+    teacher        Teacher?  @relation(fields: [teacherId], references: [id])
     subject        Subject[]
     sg             String
+    roomId         Int
+    room           Room      @relation(fields: [roomId], references: [roomId])
 }
 
 model Kl {
@@ -66,13 +68,6 @@ model Kl {
     Lesson   Lesson  @relation(fields: [lessonId], references: [id])
 }
 
-model Ro {
-    id       String  @id @default(cuid())
-    value    String?
-    lesson   Lesson  @relation(fields: [lessonId], references: [id])
-    lessonId String
-}
-
 model Subject {
     id       String  @id @default(cuid())
     value    String?
@@ -81,16 +76,15 @@ model Subject {
 }
 
 model Teacher {
-    id        String  @id @default(cuid())
-    teacherId Int     @unique
+    id        String   @id @default(cuid())
+    teacherId Int      @unique
     name      String
     foreName  String
     longName  String
     title     String
     active    Boolean
     classes   Class[]
-    Lesson    Lesson? @relation(fields: [lessonId], references: [id])
-    lessonId  String?
+    lessons   Lesson[]
 }
 
 model Class {
@@ -102,4 +96,12 @@ model Class {
     untisUser UntisUser[]
     teacher   Teacher?    @relation(fields: [teacherId], references: [teacherId])
     teacherId Int?        @map("teacher_id")
+}
+
+model Room {
+    id       String   @id @default(cuid())
+    roomId   Int      @unique
+    name     String?
+    longName String?
+    lessons  Lesson[]
 }

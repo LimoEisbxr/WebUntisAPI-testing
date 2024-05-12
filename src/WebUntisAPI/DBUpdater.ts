@@ -50,7 +50,7 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
 
     // Get all Lessons
 
-    const allRegisteredClassesUnits = await getAllRegisteredClasses();
+    const allRegisteredClassesUntis = await getAllRegisteredClasses();
 
     let allLessons: LessonModel[] = [];
 
@@ -60,7 +60,7 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
     const rangeStart = new Date(Date.now() - 1000 * 60 * 60 * 24 * 10);
     const rangeEnd = new Date(Date.now() + 1000 * 60 * 60 * 24 * 10);
 
-    for (const classData of allRegisteredClassesUnits) {
+    for (const classData of allRegisteredClassesUntis) {
         const user = (
             await getDataFromTableByKey(
                 'UntisUser',
@@ -81,9 +81,9 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
             rangeEnd,
         ]);
 
-        // console.log('### kl ###: ', lessonData[0].kl);
+        console.log('### ro ###: ', lessonData[2].ro);
 
-        // console.log('lessonData: ', lessonData);
+        console.log('lessonData: ', lessonData);
 
         allLessons = lessonData.map((lesson: any) => {
             return mapToLessonModel(lesson);
@@ -202,7 +202,7 @@ const mapToLessonModel = (obj: any): LessonModel => {
             create: kl,
         },
         teacher: obj.te || [],
-        ro: obj.ro || [],
+        room: obj.ro || [],
         subject: obj.su || [],
         sg: obj.sg || '',
     };
@@ -218,15 +218,18 @@ async function saveLessonsToDB(
             console.log('item: ', item);
             console.log('item.kl: ', item.kl);
 
-            // Extract kl data and remove it from item
+            // Extract kl and teacher data and remove them from item
             const klData = item.kl;
             delete item.kl;
+
+            const teacherData = item.teacher;
+            delete item.teacher;
 
             // First, upsert the Lesson
             const upsertedLesson = await prisma[modelName].upsert({
                 where: { [uniqueIdentifier]: item[uniqueIdentifier] },
-                update: item,
-                create: item,
+                update: { ...item, teacherId: teacherData[0].id },
+                create: { ...item, teacherId: teacherData[0].id },
             });
 
             // Then, upsert the Kl items with the lessonId set to the upserted Lesson's id
@@ -264,7 +267,7 @@ interface LessonModel {
     classId: number;
     kl: KlCreateInput | null;
     teacher: any[];
-    ro: any[];
+    room: any[];
     subject: any[];
     sg: string;
 }
