@@ -1,10 +1,13 @@
 import { ButtonInteraction, EmbedBuilder } from "discord.js";
-import { WebUntis } from "webuntis";
+import { Homework, Lesson, WebUntis } from "webuntis";
 import {
     getUntisUserData,
     getTeacherData,
 } from "../../Database/databaseFunctions.js";
-import { getTimeTableForDate } from "../../WebUntisAPI/APIFunctions.js";
+import {
+    getHomeworksForDate,
+    getTimeTableForDate,
+} from "../../WebUntisAPI/APIFunctions.js";
 import { mergeLessons } from "../../WebUntisAPI/dataFormatting.js";
 import { formatUntisTime } from "../Utility/formatters.js";
 
@@ -40,12 +43,28 @@ export async function handleLessonButton(interaction: ButtonInteraction) {
     }
 
     const teacher = await getTeacherData(lesson.te[0].id);
+    const homework = await getHomeworksForDate(date, untis);
+    console.log(homework);
+    console.log(lesson);
+
+    let homeworkSubjectID = -1;
+    homework.lessons.forEach((subject: any) => {
+        if (subject.subject === lesson.su[0].name) {
+            homeworkSubjectID = subject.id;
+        }
+    });
+
+    let homeworkForLesson: Homework[] = [];
+    homework.homeworks.forEach((hw: Homework) => {
+        if (hw.lessonId === homeworkSubjectID) {
+            homeworkForLesson.push(hw);
+        }
+    });
 
     // Create a new embed message
     const embed = new EmbedBuilder()
         .setColor("#0099ff")
         .setTitle(`Lesson Details for ${lesson.su[0].longname}`)
-        .setDescription(`Details for the lesson clicked by ${username}`)
         .addFields(
             { name: "Date", value: date.toDateString() },
             {
@@ -57,6 +76,18 @@ export async function handleLessonButton(interaction: ButtonInteraction) {
             {
                 name: "Teacher",
                 value: `${teacher.foreName} ${teacher.longName}`,
+            },
+            {
+                name: "Room",
+                value: lesson.ro[0].name,
+            },
+            {
+                name: "Homework",
+                value: homeworkForLesson.length
+                    ? homeworkForLesson
+                          .map((hw: Homework) => hw.text)
+                          .join("\n")
+                    : "No homework for this lesson",
             }
         );
 

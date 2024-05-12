@@ -1,6 +1,7 @@
 import { start } from 'repl';
 import { Homework, Lesson, Teacher, WebAPITimetable, WebUntis } from 'webuntis';
 
+
 export async function getTimetableForToday(untis: WebUntis): Promise<Lesson[]> {
     await untis.login();
     const timetable_today: Lesson[] = await untis.getOwnTimetableForToday();
@@ -82,6 +83,18 @@ export async function getAllStudents(untis: WebUntis): Promise<any[]> {
     await untis.logout();
 
     return students;
+}
+
+export async function getHomeworksForDate(
+    date: Date,
+    untis: WebUntis
+): Promise<any> {
+    await untis.login();
+
+    const homeWorkAndLessons = await untis.getHomeWorksFor(date, date);
+    await untis.logout();
+
+    return homeWorkAndLessons;
 }
 
 // export async function returnTheCurrentActiveUserClass(
