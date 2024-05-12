@@ -8,6 +8,7 @@ import {
 import {
     getAllClasses,
     getAllLessonsForAClass,
+    getAllRooms,
     getAllSubjects,
     getAllTeachers,
 } from './APIFunctions.js';
@@ -49,6 +50,18 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
         saveClassWithTeacher(classData);
     }
 
+    const allRooms = await getAllRooms(untis);
+    const remappedRooms = allRooms.map(mapToRoomModel);
+
+    // console.log('allRooms: ', remappedRooms);
+
+    saveToDB('Room', 'roomId', remappedRooms);
+
+    const allSubjects = await getAllSubjects(untis);
+    const remappedSubjects = allSubjects.map(mapToSubjectModel);
+
+    saveToDB('Subject', 'subjectId', remappedSubjects);
+
     // Get all Lessons
 
     const allRegisteredClassesUntis = await getAllRegisteredClasses();
@@ -82,13 +95,13 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
             rangeEnd,
         ]);
 
-        console.log('### ro ###: ', lessonData[2].ro);
-        console.log('### kl ###: ', lessonData[2].kl);
-        console.log('### subject ###: ', lessonData[4].su);
+        // console.log('### ro ###: ', lessonData[2].ro);
+        // console.log('### kl ###: ', lessonData[2].kl);
+        // console.log('### subject ###: ', lessonData[4].su);
 
         // console.log('allSubjects: ', await getAllSubjects(untis));
 
-        console.log('lessonData: ', lessonData);
+        // console.log('lessonData: ', lessonData);
 
         allLessons = lessonData.map((lesson: any) => {
             return mapToLessonModel(lesson);
@@ -124,6 +137,24 @@ function renameAndDeleteJsonData(data: any[]): any[] {
         } = item;
         return { classId, className, teacherId, ...rest };
     });
+}
+
+function mapToRoomModel(obj: RoomModel) {
+    return {
+        roomId: obj.id,
+        name: obj.name,
+        longName: obj.longName,
+    };
+}
+
+function mapToSubjectModel(obj: SubjectModel) {
+    return {
+        subjectId: obj.id,
+        name: obj.name,
+        longName: obj.longName,
+        alternateName: obj.alternateName,
+        active: obj.active,
+    };
 }
 
 const prisma = new PrismaClient() as any;
@@ -204,8 +235,8 @@ async function saveLessonsToDB(
 ): Promise<void> {
     try {
         for (const item of data) {
-            console.log('item: ', item);
-            console.log('item.kl: ', item.kl);
+            // console.log('item: ', item);
+            // console.log('item.kl: ', item.kl);
 
             // Extract kl, teacher, class, room, and subject data and remove them from item
             const klData = item.kl;
@@ -243,31 +274,27 @@ async function saveLessonsToDB(
                 },
                 create: {
                     ...item,
-                    teacherId: teacherData[0].id,
-                    classId: classData,
-                    roomId: roomData,
-                    subjectId: subjectData,
-                    Class: {
+                    class: {
                         connect: {
                             classId: classData,
                         },
                     },
-                    Teacher: {
+                    teacher: {
                         connect: {
                             teacherId: teacherData[0].id,
                         },
                     },
                     ...(roomData && {
-                        Room: {
+                        room: {
                             connect: {
                                 roomId: roomData,
                             },
                         },
                     }),
                     ...(subjectData && {
-                        Subject: {
+                        subject: {
                             connect: {
-                                id: subjectData,
+                                subjectId: subjectData,
                             },
                         },
                     }),
@@ -281,9 +308,6 @@ async function saveLessonsToDB(
             error
         );
     }
-}
-interface KlCreateInput {
-    create: { name: string; longName: string; lessonId: string }[];
 }
 
 interface LessonModel {
@@ -301,6 +325,23 @@ interface LessonModel {
     ro: any[];
     subject: any[];
     sg: string;
+}
+
+interface RoomModel {
+    id: string;
+    roomId: number;
+    name: string;
+    longName: string;
+    lessons: any[];
+}
+
+interface SubjectModel {
+    id: string;
+    subjectId: number;
+    name: string;
+    longName: string;
+    alternateName: string;
+    active: boolean;
 }
 
 interface RescheduleInfo {
