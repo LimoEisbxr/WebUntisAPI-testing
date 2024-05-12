@@ -49,15 +49,15 @@ model Lesson {
     endTime        DateTime
     lessonState    String?
     rescheduleInfo String?
-    classId        Int
-    class          Class    @relation(fields: [classId], references: [classId])
+    classId        Int?
+    class          Class?   @relation(fields: [classId], references: [classId], onUpdate: NoAction, onDelete: SetDefault)
     teacherId      Int?
-    teacher        Teacher? @relation(fields: [teacherId], references: [teacherId])
+    teacher        Teacher? @relation(fields: [teacherId], references: [teacherId], onUpdate: NoAction, onDelete: SetDefault)
     sg             String?
     roomId         Int?
-    room           Room?    @relation(fields: [roomId], references: [roomId])
+    room           Room?    @relation(fields: [roomId], references: [roomId], onUpdate: NoAction, onDelete: SetDefault)
     subjectId      Int?
-    subject        Subject? @relation(fields: [subjectId], references: [subjectId])
+    subject        Subject? @relation(fields: [subjectId], references: [subjectId], onUpdate: NoAction, onDelete: SetDefault)
 }
 
 model Subject {

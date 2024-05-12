@@ -36,18 +36,18 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
 
     const allTeachers = await getAllTeachers(untis);
 
-    const renamedTeachers = renameJsonTeacherData(allTeachers);
+    const renamedTeachers = await renameJsonTeacherData(allTeachers);
 
-    saveToDB('Teacher', 'teacherId', renamedTeachers);
+    await saveToDB('Teacher', 'teacherId', renamedTeachers);
 
     const allClasses = await getAllClasses(untis);
 
-    const renamedClasses = renameAndDeleteJsonData(allClasses);
+    const renamedClasses = await renameAndDeleteJsonData(allClasses);
 
     // console.log('renamed classes: ', renamedClasses);
 
     for (const classData of renamedClasses) {
-        saveClassWithTeacher(classData);
+        await saveClassWithTeacher(classData);
     }
 
     const allRooms = await getAllRooms(untis);
@@ -55,12 +55,12 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
 
     // console.log('allRooms: ', remappedRooms);
 
-    saveToDB('Room', 'roomId', remappedRooms);
+    await saveToDB('Room', 'roomId', remappedRooms);
 
     const allSubjects = await getAllSubjects(untis);
-    const remappedSubjects = allSubjects.map(mapToSubjectModel);
+    const remappedSubjects = await allSubjects.map(mapToSubjectModel);
 
-    saveToDB('Subject', 'subjectId', remappedSubjects);
+    await saveToDB('Subject', 'subjectId', remappedSubjects);
 
     // Get all Lessons
 
@@ -75,6 +75,7 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
     const rangeEnd = new Date(Date.now() + 1000 * 60 * 60 * 24 * 10);
 
     for (const classData of allRegisteredClassesUntis) {
+        console.log('classData: ', classData);
         const user = (
             await getDataFromTableByKey(
                 'UntisUser',
@@ -103,9 +104,9 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
 
         // console.log('lessonData: ', lessonData);
 
-        allLessons = lessonData.map((lesson: any) => {
+        allLessons = (await lessonData.map((lesson: any) => {
             return mapToLessonModel(lesson);
-        }) as LessonModel[];
+        })) as LessonModel[];
 
         // console.log('allLessons: ', allLessons);
 
@@ -120,8 +121,15 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
 
 function renameJsonTeacherData(data: any[]): any[] {
     return data.map((item) => {
-        const { id: teacherId, dids, ...rest } = item;
-        return { teacherId, ...rest };
+        const { id: teacherId, orgid, orgname, dids, ...rest } = item;
+        let newObject = { teacherId, ...rest };
+        if (orgid) {
+            newObject.teacherId = orgid;
+        }
+        if (orgname) {
+            newObject.name = orgname;
+        }
+        return newObject;
     });
 }
 
@@ -211,7 +219,7 @@ const mapToLessonModel = (obj: any): LessonModel => {
     return {
         id: obj.id ? obj.id.toString() : '',
         lessonId: obj.lsnumber || 0,
-        lessonCode: obj.activityType || '',
+        lessonCode: obj.code || 'Unterricht',
         date: formattedDate,
         startTime: obj.startTime
             ? new Date(obj.startTime.toString())
@@ -242,8 +250,17 @@ async function saveLessonsToDB(
             const klData = item.kl;
             delete item.kl;
 
-            const teacherData = item.teacher;
+            let teacherData = item.teacher;
+
+            if (item.teacher[0].orgid && item.teacher[0].orgname) {
+                // console.log('teacherData: ', teacherData);
+                // console.log('!!!!!!!!!!!!!!!!!!!!!!!!');
+                teacherData[0].name = item.teacher[0].orgname;
+                teacherData[0].id = item.teacher[0].orgid;
+            }
             delete item.teacher;
+
+            // console.log('teacherData: ', teacherData);
 
             const classData = klData[0].id; // Assuming classId is the id of the first kl object
             delete item.classId; // If classId is a property of item, delete it
@@ -261,6 +278,8 @@ async function saveLessonsToDB(
                 delete item.subjectId; // If subjectId is a property of item, delete it
             }
             delete item.subject; // Always delete subject from item
+
+            // console.log('###########: ', item);
 
             // First, upsert the Lesson
             const upsertedLesson = await prisma[modelName].upsert({
@@ -301,7 +320,7 @@ async function saveLessonsToDB(
                 },
             });
         }
-        console.log('Data saved successfully');
+        console.log('Data saved successfully!!');
     } catch (error) {
         console.error(
             `An error occurred while saving the data to ${modelName}:`,
