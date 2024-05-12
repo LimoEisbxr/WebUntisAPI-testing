@@ -1,4 +1,6 @@
-import { Homework, Lesson, Teacher, WebAPITimetable, WebUntis } from "webuntis";
+import { start } from 'repl';
+import { Homework, Lesson, Teacher, WebAPITimetable, WebUntis } from 'webuntis';
+
 
 export async function getTimetableForToday(untis: WebUntis): Promise<Lesson[]> {
     await untis.login();
@@ -113,3 +115,40 @@ export async function getHomeworksForDate(
 
 //     return lessons;
 // }
+
+export async function getAllLessonsForAClass(
+    untisUser: WebUntis,
+    rangeDate: Date[]
+) {
+    await untisUser.login();
+
+    const startDate = rangeDate[0];
+    const endDate = rangeDate[1];
+
+    const allLessonsinRange: Lesson[] = await untisUser.getOwnTimetableForRange(
+        startDate,
+        endDate
+    );
+
+    await untisUser.logout();
+
+    return allLessonsinRange;
+}
+
+export async function getAllRooms(untis: WebUntis): Promise<any[]> {
+    await untis.login();
+
+    const rooms: any[] = await untis.getRooms();
+    await untis.logout();
+
+    return rooms;
+}
+
+export async function getAllSubjects(untis: WebUntis): Promise<any[]> {
+    await untis.login();
+
+    const subjects: any[] = await untis.getSubjects();
+    await untis.logout();
+
+    return subjects;
+}

@@ -24,7 +24,9 @@ export const data = new SlashCommandBuilder()
     .addStringOption((option) =>
         option
             .setName('schoolname')
-            .setDescription('The school you are attending. default: hhg-zw')
+            .setDescription(
+                'The webuntis school id you are attending. default: hhg-zw'
+            )
             .setRequired(false)
     )
     .addStringOption((option) =>

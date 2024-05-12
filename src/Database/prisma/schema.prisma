@@ -43,34 +43,60 @@ model primaryUser {
 model Lesson {
     id             String   @id @default(cuid())
     lessonId       Int      @unique
-    lessonCode     String
+    lessonCode     String?
     date           DateTime
     startTime      DateTime
     endTime        DateTime
-    lessonState    String
+    lessonState    String?
     rescheduleInfo String?
-    classId        Int
-    Class          Class    @relation(fields: [classId], references: [classId])
+    classId        Int?
+    class          Class?   @relation(fields: [classId], references: [classId], onUpdate: NoAction, onDelete: SetDefault)
+    teacherId      Int?
+    teacher        Teacher? @relation(fields: [teacherId], references: [teacherId], onUpdate: NoAction, onDelete: SetDefault)
+    sg             String?
+    roomId         Int?
+    room           Room?    @relation(fields: [roomId], references: [roomId], onUpdate: NoAction, onDelete: SetDefault)
+    subjectId      Int?
+    subject        Subject? @relation(fields: [subjectId], references: [subjectId], onUpdate: NoAction, onDelete: SetDefault)
+}
+
+model Subject {
+    id            String   @id @default(cuid())
+    subjectId     Int      @unique
+    name          String
+    longName      String?
+    alternateName String?
+    active        Boolean?
+    lessons       Lesson[]
 }
 
 model Teacher {
-    id        String  @id @default(cuid())
-    teacherId Int     @unique
+    id        String   @id @default(cuid())
+    teacherId Int      @unique
     name      String
     foreName  String
     longName  String
-    title     String
-    active    Boolean
+    title     String?
+    active    Boolean?
     classes   Class[]
+    lessons   Lesson[]
 }
 
 model Class {
     id        String      @id @default(cuid())
     classId   Int         @unique
     className String      @unique
-    longName  String
+    longName  String?
     lessons   Lesson[]
     untisUser UntisUser[]
-    teacher   Teacher?    @relation(fields: [teacherId], references: [teacherId])
     teacherId Int?        @map("teacher_id")
+    teacher   Teacher?    @relation(fields: [teacherId], references: [teacherId])
+}
+
+model Room {
+    id       String   @id @default(cuid())
+    roomId   Int      @unique
+    name     String?
+    longName String?
+    lessons  Lesson[]
 }
