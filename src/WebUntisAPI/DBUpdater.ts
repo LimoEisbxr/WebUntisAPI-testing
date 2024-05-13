@@ -75,7 +75,7 @@ export async function updateDB(untisUser?: WebUntis): Promise<void> {
     const rangeEnd = new Date(Date.now() + 1000 * 60 * 60 * 24 * 10);
 
     for (const classData of allRegisteredClassesUntis) {
-        console.log('classData: ', classData);
+        // console.log('classData: ', classData);
         const user = (
             await getDataFromTableByKey(
                 'UntisUser',
@@ -217,14 +217,13 @@ const mapToLessonModel = (obj: any): LessonModel => {
         : new Date();
 
     return {
-        id: obj.id ? obj.id.toString() : '',
-        lessonId: obj.lsnumber || 0,
+        lessonId: obj.id,
         lessonCode: obj.code || 'Unterricht',
         date: formattedDate,
         startTime: obj.startTime
-            ? new Date(obj.startTime.toString())
+            ? convertTimeToDate(obj.startTime)
             : new Date(),
-        endTime: obj.endTime ? new Date(obj.endTime.toString()) : new Date(),
+        endTime: obj.endTime ? convertTimeToDate(obj.endTime) : new Date(),
         lessonState: obj.lessonState || 'Some State',
         rescheduleInfo: obj.rescheduleInfo || null,
         classId: obj.classId || 1,
@@ -235,6 +234,14 @@ const mapToLessonModel = (obj: any): LessonModel => {
         sg: obj.sg || '',
     };
 };
+
+function convertTimeToDate(time: number): Date {
+    const hours = Math.floor(time / 100);
+    const minutes = time % 100;
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    return date;
+}
 
 async function saveLessonsToDB(
     modelName: string,
@@ -330,7 +337,6 @@ async function saveLessonsToDB(
 }
 
 interface LessonModel {
-    id: string;
     lessonId: number;
     lessonCode: string;
     date: Date;

@@ -5,7 +5,7 @@ import {
 } from 'discord.js';
 import { prisma } from './index.js';
 import { WebUntis } from 'webuntis';
-import { getAutocompleteChoices } from '../handlers/handleAutocompleteChoices.js';
+import { getAutocompleteChoices } from '../handlers/handleAutoCompleteChoices.js';
 
 export const data = new SlashCommandBuilder()
     .setName('login')
@@ -121,6 +121,7 @@ export async function execute(interaction: CommandInteraction) {
                 untisUrl: schoolURL || defaultSchoolURL,
             },
             update: {
+                discordId: interaction.user.id,
                 discordUsername: interaction.user.username,
                 untisUsername: username,
                 untisPassword: password,

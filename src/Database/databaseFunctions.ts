@@ -1,5 +1,5 @@
 import { WebUntis } from 'webuntis';
-import { Class, PrismaClient } from '@prisma/client';
+import { Class, PrismaClient, UntisUser } from '@prisma/client';
 
 export const prisma = new PrismaClient() as any;
 
@@ -111,6 +111,24 @@ export async function getAllRegisteredClasses(): Promise<Class[]> {
         },
         include: {
             untisUser: true,
+        },
+    });
+}
+
+export async function getAllUsersWithLessonNotifierDaily(): Promise<
+    UntisUser[]
+> {
+    console.log('Getting all users with lessonNotifierDaily');
+    return prisma.untisUser.findMany({
+        where: {
+            lessonNotifierDaily: {
+                isNot: null,
+            },
+        },
+        include: {
+            lessonNotifierDaily: true,
+            primaryUser: true,
+            class: true,
         },
     });
 }

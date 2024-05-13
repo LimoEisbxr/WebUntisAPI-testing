@@ -1,5 +1,5 @@
 import { AutocompleteInteraction, Interaction } from 'discord.js';
-import { getAutocompleteChoices } from './handleAutocompleteChoices.js';
+import { getAutocompleteChoices } from './handleAutoCompleteChoices.js';
 
 export async function handleAutocomplete(interaction: any) {
     console.log('Autocomplete Interaction');

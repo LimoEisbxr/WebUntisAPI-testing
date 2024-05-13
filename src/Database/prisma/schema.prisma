@@ -11,17 +11,18 @@ datasource db {
 }
 
 model UntisUser {
-    id              String       @id @default(cuid())
-    createdAt       DateTime     @default(now())
-    discordId       String       @unique
-    discordUsername String
-    untisSchoolName String
-    untisUsername   String
-    untisPassword   String
-    untisUrl        String
-    primaryUser     primaryUser?
-    class           Class?       @relation(fields: [className], references: [className])
-    className       String?
+    id                  String               @id @default(cuid())
+    createdAt           DateTime             @default(now())
+    discordId           String               @unique
+    discordUsername     String
+    untisSchoolName     String
+    untisUsername       String
+    untisPassword       String
+    untisUrl            String
+    primaryUser         primaryUser?
+    class               Class?               @relation(fields: [className], references: [className])
+    className           String?
+    lessonNotifierDaily lessonNotifierDaily?
 }
 
 model lessonNotifier {
@@ -99,4 +100,15 @@ model Room {
     name     String?
     longName String?
     lessons  Lesson[]
+}
+
+model lessonNotifierDaily {
+    id          String    @id @default(cuid())
+    UntisUser   UntisUser @relation(fields: [discordId], references: [discordId])
+    discordId   String    @unique
+    perDM       Boolean?
+    channelId   String
+    guildId     String?
+    onlyInBreak Boolean?
+    offset      Int?
 }
