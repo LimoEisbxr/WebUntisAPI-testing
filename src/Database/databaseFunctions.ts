@@ -118,7 +118,7 @@ export async function getAllRegisteredClasses(): Promise<Class[]> {
 export async function getAllUsersWithLessonNotifierDaily(): Promise<
     UntisUser[]
 > {
-    console.log('Getting all users with lessonNotifierDaily');
+    // console.log('Getting all users with lessonNotifierDaily');
     return prisma.untisUser.findMany({
         where: {
             lessonNotifierDaily: {

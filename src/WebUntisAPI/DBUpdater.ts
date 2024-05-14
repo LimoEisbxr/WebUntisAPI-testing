@@ -216,14 +216,20 @@ const mapToLessonModel = (obj: any): LessonModel => {
           )
         : new Date();
 
+    if (obj.id === 1368456) {
+        console.log('obj: ', obj);
+    }
+
     return {
         lessonId: obj.id,
         lessonCode: obj.code || 'Unterricht',
         date: formattedDate,
         startTime: obj.startTime
-            ? convertTimeToDate(obj.startTime)
+            ? convertTimeToDate(obj.startTime, formattedDate)
             : new Date(),
-        endTime: obj.endTime ? convertTimeToDate(obj.endTime) : new Date(),
+        endTime: obj.endTime
+            ? convertTimeToDate(obj.endTime, formattedDate)
+            : new Date(),
         lessonState: obj.lessonState || 'Some State',
         rescheduleInfo: obj.rescheduleInfo || null,
         classId: obj.classId || 1,
@@ -235,14 +241,13 @@ const mapToLessonModel = (obj: any): LessonModel => {
     };
 };
 
-function convertTimeToDate(time: number): Date {
+function convertTimeToDate(time: number, date: Date): Date {
     const hours = Math.floor(time / 100);
     const minutes = time % 100;
-    const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
-    return date;
+    const newDate = new Date(date.getTime());
+    newDate.setHours(hours, minutes, 0, 0);
+    return newDate;
 }
-
 async function saveLessonsToDB(
     modelName: string,
     uniqueIdentifier: string,

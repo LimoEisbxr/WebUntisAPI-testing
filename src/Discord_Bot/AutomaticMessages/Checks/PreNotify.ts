@@ -8,19 +8,24 @@ export async function preNotify() {
     // pingUserInDm('444429411891019776', 'Hello World!');
 
     let nextDayAt10 = new Date();
-    nextDayAt10.setUTCDate(nextDayAt10.getUTCDate() + 1);
-    nextDayAt10.setUTCHours(8, 0, 0, 0);
+    nextDayAt10.setUTCDate(nextDayAt10.getUTCDate());
+    nextDayAt10.setUTCHours(8, 0, 1, 0);
 
     const nextLesson = await getAllLessonsToDateAndTime(
-        nextDayAt10,
-        900,
-        5000000,
-        1
+        nextDayAt10, // startDate
+        5000000, // maxRange
+        false, // useCurrentTime
+        '10:00', // startTime
+        1 // limit
     );
 
-    console.log(nextLesson);
+    if (nextLesson[0] && nextLesson[0]['subject']) {
+        console.log(nextLesson[0]['subject']['name'].toString());
+    }
 
-    console.log(allUsersWithNotifySetup);
+    console.log('Next lesson:', nextLesson);
+
+    // console.log(allUsersWithNotifySetup);
 }
 
 async function pingUserInDm(userID: string, message: string) {
