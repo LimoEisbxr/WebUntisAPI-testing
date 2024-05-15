@@ -216,20 +216,16 @@ const mapToLessonModel = (obj: any): LessonModel => {
           )
         : new Date();
 
-    if (obj.id === 1368456) {
-        console.log('obj: ', obj);
-    }
+    // if (obj.id === 1368456) {
+    //     console.log('obj: ', obj);
+    // }
 
     return {
         lessonId: obj.id,
         lessonCode: obj.code || 'Unterricht',
         date: formattedDate,
-        startTime: obj.startTime
-            ? convertTimeToDate(obj.startTime, formattedDate)
-            : new Date(),
-        endTime: obj.endTime
-            ? convertTimeToDate(obj.endTime, formattedDate)
-            : new Date(),
+        startTime: String(obj.startTime),
+        endTime: String(obj.endTime),
         lessonState: obj.lessonState || 'Some State',
         rescheduleInfo: obj.rescheduleInfo || null,
         classId: obj.classId || 1,
@@ -345,8 +341,8 @@ interface LessonModel {
     lessonId: number;
     lessonCode: string;
     date: Date;
-    startTime: Date;
-    endTime: Date;
+    startTime: string;
+    endTime: string;
     lessonState: string;
     rescheduleInfo: null | RescheduleInfo;
     classId: number;

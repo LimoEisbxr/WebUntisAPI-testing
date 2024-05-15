@@ -26,6 +26,17 @@ type LessonWithRoom = Lesson & {
     room: Room | null;
 };
 
+// Utility function to calculate the difference in minutes between two times
+function getMinutesDifference(time1: string, time2: string): number {
+    const [hours1, minutes1] = time1.split(':').map(Number);
+    const [hours2, minutes2] = time2.split(':').map(Number);
+
+    const totalMinutes1 = hours1 * 60 + minutes1;
+    const totalMinutes2 = hours2 * 60 + minutes2;
+
+    return Math.abs(totalMinutes1 - totalMinutes2);
+}
+
 export async function getAllLessonsToDateAndTime(
     startDate: Date,
     maxRange: number,
@@ -75,14 +86,27 @@ export async function getAllLessonsToDateAndTime(
 
         const lessonDate = new Date(lesson.date);
 
-        // Check if lesson.startTime is a valid date string
-        if (isNaN(Date.parse(String(lesson.startTime)))) {
+        // Check if lesson.startTime is a valid time string
+        let lessonStartHours: number, lessonStartMinutes: number;
+        if (String(lesson.startTime).includes(':')) {
+            [lessonStartHours, lessonStartMinutes] = String(lesson.startTime)
+                .split(':')
+                .map(Number);
+        } else {
+            // Handle time format without colon, e.g., "1205", "740"
+            const timeString = String(lesson.startTime).padStart(4, '0');
+            lessonStartHours = Number(timeString.substring(0, 2));
+            lessonStartMinutes = Number(timeString.substring(2, 4));
+        }
+
+        if (isNaN(lessonStartHours) || isNaN(lessonStartMinutes)) {
             console.error('Invalid lesson.startTime:', lesson.startTime);
             return false;
         }
 
         // Create a Date object from lesson.startTime
-        const lessonStartTime = new Date(String(lesson.startTime));
+        const lessonStartTime = new Date(lessonDate.getTime());
+        lessonStartTime.setHours(lessonStartHours, lessonStartMinutes, 0, 0);
 
         console.log(
             'Lesson Date:',

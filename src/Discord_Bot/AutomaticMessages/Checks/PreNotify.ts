@@ -8,7 +8,7 @@ export async function preNotify() {
     // pingUserInDm('444429411891019776', 'Hello World!');
 
     let nextDayAt10 = new Date();
-    nextDayAt10.setUTCDate(nextDayAt10.getUTCDate());
+    nextDayAt10.setUTCDate(nextDayAt10.getUTCDate() + 1);
     nextDayAt10.setUTCHours(8, 0, 1, 0);
 
     const nextLesson = await getAllLessonsToDateAndTime(

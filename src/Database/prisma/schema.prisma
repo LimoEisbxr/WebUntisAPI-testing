@@ -46,8 +46,8 @@ model Lesson {
     lessonId       Int      @unique
     lessonCode     String?
     date           DateTime
-    startTime      DateTime
-    endTime        DateTime
+    startTime      String
+    endTime        String
     lessonState    String?
     rescheduleInfo String?
     classId        Int?
