@@ -1,42 +1,49 @@
 import { getAllUsersWithLessonNotifierDaily } from '../../../Database/databaseFunctions.js';
-import { client } from '../../../index.js';
+import { createNextLessonMessage } from '../../Utility/messageSends.js';
 import { getAllLessonsToDateAndTime } from '../automatedCheckUtils/utils.js';
 
 export async function preNotify() {
     const allUsersWithNotifySetup = await getAllUsersWithLessonNotifierDaily();
 
-    // pingUserInDm('444429411891019776', 'Hello World!');
+    for (const untisUser of allUsersWithNotifySetup) {
+        // tommorow as date
 
-    let nextDayAt10 = new Date();
-    nextDayAt10.setUTCDate(nextDayAt10.getUTCDate() + 1);
-    nextDayAt10.setUTCHours(8, 0, 1, 0);
+        const date = new Date();
+        date.setDate(date.getDate() + 2);
+        date.setHours(0, 0, 0, 0);
 
-    const nextLesson = await getAllLessonsToDateAndTime(
-        nextDayAt10, // startDate
-        5000000, // maxRange
-        false, // useCurrentTime
-        '10:00', // startTime
-        1 // limit
-    );
+        // console.log('Date:', date);
 
-    if (nextLesson[0] && nextLesson[0]['subject']) {
-        console.log(nextLesson[0]['subject']['name'].toString());
-    }
+        const nextLesson = await getAllLessonsToDateAndTime(
+            10, // maxRange
+            untisUser, // untisUser
+            date, // startDate
+            false, // useCurrentTimes
+            '12:00', // startTime
+            1 // limit
+        );
 
-    console.log('Next lesson:', nextLesson);
+        // if (nextLesson[0] && nextLesson[0]['subject']) {
+        //     console.log(nextLesson[0]['subject']['name'].toString());
+        // }
 
-    // console.log(allUsersWithNotifySetup);
-}
-
-async function pingUserInDm(userID: string, message: string) {
-    try {
-        const user = await client.users.fetch(userID);
-        if (user) {
-            await user.send(message);
-        } else {
-            console.log(`User with ID: ${userID} not found.`);
+        createNextLessonMessage(
+            `${untisUser.discordId}`, // User ID
+            'Upcomming Lesson:',
+            [
+                ['Subject', nextLesson[0]?.subject?.longName || 'No subject'],
+                ['Room', nextLesson[0]?.room?.name || 'No room'],
+                ['Teacher', nextLesson[0]?.teacher?.longName || 'No teacher'],
+                ['Start Time', nextLesson[0]?.startTime || 'No start time'],
+                ['End Time', nextLesson[0]?.endTime || 'No end time'],
+            ]
+        );
+        // time.sleep in typescript
+        // if there was at least one lesson, wait 100 seconds
+        if (nextLesson[0]) {
+            await new Promise((r) => setTimeout(r, 100000));
         }
-    } catch (error) {
-        console.error(`Failed to send DM: ${error}`);
+
+        // console.log('Next lesson for user', untisUser, ':', nextLesson);
     }
 }

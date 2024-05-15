@@ -3,6 +3,10 @@ import { Class, PrismaClient, UntisUser } from '@prisma/client';
 
 export const prisma = new PrismaClient() as any;
 
+type UntisUserWithClass = UntisUser & {
+    class: Class | null;
+};
+
 export async function getUntisUserData(discordId: string) {
     return prisma.untisUser.findUniqueOrThrow({
         where: {
@@ -116,7 +120,7 @@ export async function getAllRegisteredClasses(): Promise<Class[]> {
 }
 
 export async function getAllUsersWithLessonNotifierDaily(): Promise<
-    UntisUser[]
+    UntisUserWithClass[]
 > {
     // console.log('Getting all users with lessonNotifierDaily');
     return prisma.untisUser.findMany({
