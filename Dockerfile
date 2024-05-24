@@ -8,6 +8,9 @@ COPY package*.json .
 
 RUN npm i webuntis --save
 
+RUN npm i prisma --save
+
+RUN npx prisma generate
 # Install any needed packages specified in package.json
 RUN npm install --save
 
@@ -17,7 +20,6 @@ COPY . .
 # Compile TypeScript into JavaScript
 RUN npm run build
 
-RUN npx prisma generate
 
 # Run the app when the container launches
 CMD sh -c 'npx prisma migrate dev --name init && node .'

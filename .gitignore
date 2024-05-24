@@ -3,7 +3,7 @@
 src/Database/prisma/userData.db
 /node_modules
 /sample_output
-package-lock.json
+# package-lock.json
 /dist
 src/Database/prisma/prismaData.db-journal
 src/Database/prisma/prismaData.db
