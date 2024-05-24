@@ -17,13 +17,13 @@ jobs:
             packages: write
         steps:
             - id: toLowerCase
-              run: echo "::set-output name=lowerCaseValue::$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')"
+              run: echo "lowerCaseValue=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
             - name: Checkout
               uses: actions/checkout@v4
 
             - name: Cache npm dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ~/.npm
                   key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -31,7 +31,7 @@ jobs:
                       ${{ runner.os }}-node-
 
             - name: Cache node modules
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
