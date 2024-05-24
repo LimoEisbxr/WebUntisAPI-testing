@@ -9,7 +9,7 @@ COPY package*.json .
 RUN npm i webuntis --save
 
 # Install any needed packages specified in package.json
-RUN npm install 
+RUN npm install --save
 
 # Copy the rest of the working directory contents into the container at /usr/src/app
 COPY . .
