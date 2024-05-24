@@ -11,7 +11,7 @@ interface Choice {
 }
 
 export async function getAutocompleteChoices(): Promise<Choice[]> {
-    const classes: ClassItem[] = await readDB('Class');
+    const classes: ClassItem[] | undefined | null = await readDB('Class');
 
     // console.log('Classes:', classes);
 
@@ -25,5 +25,9 @@ export async function getAutocompleteChoices(): Promise<Choice[]> {
 
     // console.log('Choices:', choices);
 
-    return choices;
+    if (classes) {
+        return choices;
+    } else {
+        return [];
+    }
 }

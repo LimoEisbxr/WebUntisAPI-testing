@@ -19,7 +19,7 @@ export async function handleAutocomplete(interaction: any) {
             return;
         }
 
-        const filteredOptions = choices.filter((choice) => {
+        const filteredOptions = choices.filter((choice: any) => {
             // console.log('Choice:', choice);
             return choice.name
                 .toLowerCase()
@@ -28,7 +28,7 @@ export async function handleAutocomplete(interaction: any) {
 
         // console.log(filteredOptions);
 
-        const results = filteredOptions.map((choice) => {
+        const results = filteredOptions.map((choice: any) => {
             return {
                 name: choice.name,
                 value: choice.value,
