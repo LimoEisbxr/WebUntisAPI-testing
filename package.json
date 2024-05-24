@@ -20,6 +20,7 @@
         "discord.js": "^14.15.2",
         "dotenv": "^16.4.5",
         "asynckit": "^0.4.0",
-        "prisma": "5.13.0"
+        "prisma": "5.13.0",
+        "webuntis": "^2.2.1"
     }
 }
