@@ -6,7 +6,7 @@ on:
 
 env:
     REGISTRY: ghcr.io
-    IMAGE_NAME: ${{ github.repository_owner }}/webunits-bot-image:latest
+    IMAGE_NAME: ${{ github.repository_owner }}/webunits-bot-image2:latest
 
 jobs:
     publish:
@@ -57,7 +57,7 @@ jobs:
                   context: .
                   platforms: linux/arm64 # , linux/amd64
                   push: true
-                  tags: ghcr.io/limoeisbxr/webunits-bot-image:latest # ${{ env.REGISTRY }}/${{ steps.toLowerCase.outputs.lowerCaseValue }}
+                  tags: ghcr.io/limoeisbxr/webunits-bot-image2:latest # ${{ env.REGISTRY }}/${{ steps.toLowerCase.outputs.lowerCaseValue }}
 
     deploy:
         needs: publish
