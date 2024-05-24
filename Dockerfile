@@ -10,12 +10,13 @@ RUN npm i webuntis --save
 
 RUN npm i prisma --save
 
-RUN npx prisma migrate dev --schema ./src/Database/prisma/schema.prisma --name init
 # Install any needed packages specified in package.json
 RUN npm install --save
 
 # Copy the rest of the working directory contents into the container at /usr/src/app
 COPY . .
+
+RUN npx prisma migrate dev --schema ./src/Database/prisma/schema.prisma --name init
 
 # Compile TypeScript into JavaScript
 RUN npm run build
