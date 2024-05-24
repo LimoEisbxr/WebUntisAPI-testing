@@ -12,14 +12,17 @@
     "license": "ISC",
     "devDependencies": {
         "@types/node": "^20.12.11",
+        "@types/pg": "^8.11.6",
         "prisma": "^5.13.0",
         "typescript": "^5.4.5"
     },
     "dependencies": {
+        "@prisma/adapter-pg": "^5.14.0",
         "@prisma/client": "^5.13.0",
+        "asynckit": "^0.4.0",
         "discord.js": "^14.15.2",
         "dotenv": "^16.4.5",
-        "asynckit": "^0.4.0",
+        "pg": "^8.11.5",
         "prisma": "5.13.0",
         "webuntis": "^2.2.1"
     }

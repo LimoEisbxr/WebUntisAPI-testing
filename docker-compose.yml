@@ -1,0 +1,10 @@
+services:
+    discord-bot:
+        container_name: webuntis-bot
+        platform: linux/amd64
+        image: ghcr.io/limoeisbxr/webunits-bot-image:latest
+        environment:
+            - DISCORD_TOKEN=${DISCORD_TOKEN}
+            - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+            - DATABASE_URL=${DATABASE_URL}
+        restart: unless-stopped
