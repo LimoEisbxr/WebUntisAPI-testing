@@ -6,7 +6,7 @@ on:
 
 env:
     REGISTRY: ghcr.io
-    IMAGE_NAME: ${{ github.repository_owner }}/webunits-bot-image:latest
+    IMAGE_NAME: ${{ github.actor }}/webunits-bot-image:latest
 
 jobs:
     publish:
@@ -48,7 +48,7 @@ jobs:
               uses: docker/login-action@v3
               with:
                   registry: ghcr.io
-                  username: ${{ github.repository_owner }}
+                  username: ${{ github.actor }}
                   password: ${{ secrets.PAT }}
 
             - name: Build and push
