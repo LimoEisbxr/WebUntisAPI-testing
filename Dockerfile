@@ -25,4 +25,4 @@ RUN npm run build
 
 
 # Run the app when the container launches
-CMD sh -c 'npx prisma migrate deploy --name init && node .'
+CMD sh -c 'npx prisma migrate deploy && node .'
