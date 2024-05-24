@@ -55,7 +55,7 @@ jobs:
               uses: docker/build-push-action@v5
               with:
                   context: .
-                  platforms: linux/arm64, linux/amd64
+                  platforms: linux/arm64 # , linux/amd64
                   push: true
                   tags: ghcr.io/limoeisbxr/webunits-bot-image # ${{ env.REGISTRY }}/${{ steps.toLowerCase.outputs.lowerCaseValue }}
 

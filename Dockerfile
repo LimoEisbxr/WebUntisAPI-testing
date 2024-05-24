@@ -6,9 +6,9 @@ WORKDIR /app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json .
 
-RUN npm i webuntis 
+# RUN npm i webuntis 
 
-RUN npm i prisma 
+# RUN npm i prisma 
 
 # Install any needed packages specified in package.json
 RUN npm install
