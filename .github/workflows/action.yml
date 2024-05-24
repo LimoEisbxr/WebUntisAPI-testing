@@ -74,7 +74,7 @@ jobs:
                   ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
             - name: connect and pull
               run: |
-                  ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker compose up -d'
+                  ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker kill webuntis-bot && docker rm webuntis-bot && docker image rm ghcr.io/limoeisbxr/webunits-bot-image && docker compose up -d'
             - name: cleanup
               run: |
                   rm -rf ~/.ssh
