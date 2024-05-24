@@ -43,21 +43,22 @@ jobs:
                   push: true
                   tags: ghcr.io/limoeisbxr/webunits-bot-image:latest # ${{ env.REGISTRY }}/${{ steps.toLowerCase.outputs.lowerCaseValue }}
 
-            - name: Cache npm dependencies
-              uses: actions/cache@v4
-              with:
-                  path: ~/.npm
-                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-                  restore-keys: |
-                      ${{ runner.os }}-node-
+            # - name: Cache npm dependencies
+            #   uses: actions/cache@v4
+            #   with:
+            #       path: ~/.npm
+            #       key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+            #       restore-keys: |
+            #           ${{ runner.os }}-node-
 
             - name: Cache node modules
               uses: actions/cache@v4
               with:
-                  path: ./node_modules
-                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  path: node_modules
+                  key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
                   restore-keys: |
-                      ${{ runner.os }}-node-
+                      ${{ runner.os }}-build-
+                      ${{ runner.os }}-
 
     deploy:
         needs: publish
