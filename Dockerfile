@@ -6,8 +6,10 @@ WORKDIR /app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json .
 
+RUN npm i webuntis --save
+
 # Install any needed packages specified in package.json
-RUN npm ci
+RUN npm install 
 
 # Copy the rest of the working directory contents into the container at /usr/src/app
 COPY . .
