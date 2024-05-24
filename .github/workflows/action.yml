@@ -55,9 +55,9 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: node_modules
-                  key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+                  key: ${{ runner.os }}-build2-${{ hashFiles('**/package-lock.json') }}
                   restore-keys: |
-                      ${{ runner.os }}-build-
+                      ${{ runner.os }}-build2-
                       ${{ runner.os }}-
 
     deploy:
