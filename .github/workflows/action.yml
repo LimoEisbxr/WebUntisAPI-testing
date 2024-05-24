@@ -48,7 +48,7 @@ jobs:
               uses: docker/login-action@v3
               with:
                   registry: ghcr.io
-                  username: ${{ github.repository_owner }}
+                  username: LimoEisbxr
                   password: ${{ secrets.PAT }}
 
             - name: Build and push
@@ -57,7 +57,7 @@ jobs:
                   context: .
                   platforms: linux/arm64
                   push: true
-                  tags: ${{ env.REGISTRY }}/${{ steps.toLowerCase.outputs.lowerCaseValue }}
+                  tags: ghcr.io/limoeisbxr/webunits-bot-image # ${{ env.REGISTRY }}/${{ steps.toLowerCase.outputs.lowerCaseValue }}
 
     deploy:
         needs: publish
