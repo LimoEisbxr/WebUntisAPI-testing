@@ -1,4 +1,4 @@
-name: publish-and-deploy
+name: publish and deploy
 
 on:
     push:
@@ -36,7 +36,7 @@ jobs:
               uses: docker/login-action@v3
               with:
                   registry: ghcr.io
-                  username: limoeisbxr
+                  username: ${{ github.repository_owner }}
                   password: ${{ secrets.PAT }}
 
             - name: Build and push
@@ -45,7 +45,7 @@ jobs:
                   context: .
                   platforms: linux/arm64 # , linux/amd64
                   push: true
-                  tags: ghcr.io/limoeisbxr/webunits-bot-image:latest # ${{ env.REGISTRY }}/${{ steps.toLowerCase.outputs.lowerCaseValue }}
+                  tags: ${{ env.REGISTRY }}/${{ env.lowerCaseValue }} # ghcr.io/limoeisbxr/webunits-bot-image:latest #
 
     deploy:
         needs: publish
@@ -62,7 +62,6 @@ jobs:
                   ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
             - name: connect and pull
               run: |
-
                   ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker compose pull && docker compose up -d'
             - name: cleanup
               run: |
