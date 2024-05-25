@@ -63,8 +63,7 @@ jobs:
             - name: connect and pull
               run: |
 
-                  ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker-compose up -d'
-                  # docker kill webuntis-bot && docker rm webuntis-bot && docker image rm ghcr.io/limoeisbxr/webunits-bot-image && docker compose up -d'
+                  ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker-compose pull && docker-compose up -d'
             - name: cleanup
               run: |
                   rm -rf ~/.ssh
