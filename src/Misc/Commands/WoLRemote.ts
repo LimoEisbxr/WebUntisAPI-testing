@@ -65,7 +65,7 @@ export const data = new SlashCommandBuilder()
     );
 
 async function handleWakePC(interaction: CommandInteraction) {
-    const user = await prisma.WoLRemoteUser.findUnique({
+    const user = await prisma.woLRemoteUser.findUnique({
         where: { discordId: interaction.user.id },
     });
 
@@ -122,7 +122,7 @@ async function saveWoLConfig(interaction: CommandInteraction) {
     const encryptedSshKey = encrypt(sshKey);
     const encryptedTargetMac = encrypt(targetMac);
 
-    await prisma.WoLRemoteUser.upsert({
+    await prisma.woLRemoteUser.upsert({
         where: { discordId: interaction.user.id },
         update: {
             sshhost: encryptedSshHost,
@@ -145,7 +145,7 @@ async function saveWoLConfig(interaction: CommandInteraction) {
 }
 
 async function removeWoLConfig(interaction: CommandInteraction) {
-    const user = await prisma.WoLRemoteUser.findUnique({
+    const user = await prisma.woLRemoteUser.findUnique({
         where: { discordId: interaction.user.id },
     });
 
@@ -154,7 +154,7 @@ async function removeWoLConfig(interaction: CommandInteraction) {
         return;
     }
 
-    await prisma.WoLRemoteUser.delete({
+    await prisma.woLRemoteUser.delete({
         where: { discordId: interaction.user.id },
     });
 
