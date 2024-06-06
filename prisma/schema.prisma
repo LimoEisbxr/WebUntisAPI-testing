@@ -113,3 +113,14 @@ model lessonNotifierDaily {
     onlyInBreak Boolean?
     offset      Int?
 }
+
+model WoLRemoteUser {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    discordId String   @unique
+    sshhost   String
+    sshport   Int
+    sshuser   String
+    sshkey    String
+    targetmac String
+}
