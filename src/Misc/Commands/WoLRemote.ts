@@ -74,11 +74,21 @@ async function handleWakePC(interaction: CommandInteraction) {
         return;
     }
 
-    const decryptedMac = decrypt(user.targetmac);
+    const decryptedSshHost = decrypt(user.sshhost);
+    const decryptedSshUser = decrypt(user.sshuser);
+    const decryptedSshKey = decrypt(user.sshkey);
+    const decryptedSshPort = user.sshport;
+    const decryptedTargetMac = decrypt(user.targetmac);
 
     try {
-        await sendWakeOnLanPacket(decryptedMac);
-        await interaction.reply(`WOL packet sent to ${decryptedMac}.`);
+        await sendWakeOnLanPacket(
+            decryptedTargetMac,
+            decryptedSshHost,
+            decryptedSshPort,
+            decryptedSshUser,
+            decryptedSshKey
+        );
+        await interaction.reply(`WOL packet sent to ${decryptedSshHost}.`);
     } catch (error) {
         await interaction.reply(
             'Failed to send WOL packet. Please try again later.'
