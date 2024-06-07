@@ -1,22 +1,22 @@
-import { ButtonInteraction, EmbedBuilder } from "discord.js";
-import { Homework, Lesson, WebUntis } from "webuntis";
+import { ButtonInteraction, EmbedBuilder } from 'discord.js';
+import { Homework, Lesson, WebUntis } from 'webuntis';
 import {
     getUntisUserData,
     getTeacherData,
-} from "../../Database/databaseFunctions.js";
+} from '../../Database/databaseFunctions.js';
 import {
     getHomeworksForDate,
     getTimeTableForDate,
-} from "../../WebUntisAPI/APIFunctions.js";
-import { mergeLessons } from "../../WebUntisAPI/dataFormatting.js";
-import { formatUntisTime } from "../Utility/formatters.js";
+} from '../../WebUntisAPI/APIFunctions.js';
+import { mergeLessons } from '../../WebUntisAPI/dataFormatting.js';
+import { formatUntisTime } from '../Utility/formatters.js';
 
 export async function handleLessonButton(interaction: ButtonInteraction) {
     const buttonId = interaction.customId;
     const discordId = interaction.user.id;
     const username = interaction.user.username;
-    const subjectId = buttonId.split("-")[1];
-    const dateString = buttonId.split("-")[2]; // new Date("20220101")
+    const subjectId = buttonId.split('-')[1];
+    const dateString = buttonId.split('-')[2]; // new Date("20220101")
     const date = new Date(
         parseInt(dateString.slice(0, 4)),
         parseInt(dateString.slice(4, 6)) - 1,
@@ -63,37 +63,39 @@ export async function handleLessonButton(interaction: ButtonInteraction) {
 
     // Create a new embed message
     const embed = new EmbedBuilder()
-        .setColor("#0099ff")
+        .setColor('#0099ff')
         .setTitle(`Lesson Details for ${lesson.su[0].longname}`)
         .addFields(
-            { name: "Date", value: date.toDateString() },
+            { name: 'Date', value: date.toDateString() },
             {
-                name: "Time",
+                name: 'Time',
                 value: `${await formatUntisTime(
                     lesson.startTime.toString()
                 )} - ${await formatUntisTime(lesson.endTime.toString())}`,
             },
             {
-                name: "Teacher",
-                value: `${teacher.foreName} ${teacher.longName}`,
+                name: 'Teacher',
+                value: teacher
+                    ? `${teacher.foreName} ${teacher.longName}`
+                    : 'Teacher not available',
             },
             {
-                name: "Room",
+                name: 'Room',
                 value: lesson.ro[0].name,
             },
             {
-                name: "Homework",
+                name: 'Homework',
                 value: homeworkForLesson.length
                     ? homeworkForLesson
                           .map((hw: Homework) => hw.text)
-                          .join("\n")
-                    : "No homework for this lesson",
+                          .join('\n')
+                    : 'No homework for this lesson',
             }
         );
 
     // Filter out existing detail embeds
     const existingEmbeds = interaction.message.embeds.filter(
-        (embed) => embed.title && !embed.title.startsWith("Lesson Details for")
+        (embed) => embed.title && !embed.title.startsWith('Lesson Details for')
     );
 
     // Handle button click here
