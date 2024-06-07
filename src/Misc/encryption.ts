@@ -1,10 +1,17 @@
 import * as crypto from 'crypto';
 
 const algorithm = 'aes-256-cbc';
-const secretKey = process.env.ENCRYPTION_KEY; // Replace with a 32-byte key
+let secretKey = process.env.ENCRYPTION_KEY; // Replace with a 32-byte key
 
 if (!secretKey) {
     throw new Error('Missing ENCRYPTION_KEY environment variable');
+}
+
+// Ensure the key is exactly 32 bytes long
+if (secretKey.length > 32) {
+    secretKey = secretKey.substring(0, 32);
+} else if (secretKey.length < 32) {
+    secretKey = secretKey.padEnd(32, '.');
 }
 
 const iv = crypto.randomBytes(16);
