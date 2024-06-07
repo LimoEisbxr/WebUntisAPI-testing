@@ -11,57 +11,48 @@ import { sendWakeOnLanPacket } from '../../Misc/wol.js';
 export const data = new SlashCommandBuilder()
     .setName('wolremote')
     .setDescription('Wakes your PC up remotely.')
-    .addSubcommandGroup((group) =>
-        group
-            .setName('subcommands')
-            .setDescription('Wake your PC up.')
-            .addSubcommand((subcommand) =>
-                subcommand.setName('pc').setDescription('Wake your PC up.')
+    .addSubcommand((subcommand) =>
+        subcommand.setName('pc').setDescription('Wake your PC up.')
+    )
+    .addSubcommand((subcommand) =>
+        subcommand
+            .setName('config')
+            .setDescription('Save your WOL configuration.')
+            .addStringOption((option) =>
+                option
+                    .setName('sshhost')
+                    .setDescription('The SSH host / IP of the target PC.')
+                    .setRequired(true)
             )
-            .addSubcommand((subcommand) =>
-                subcommand
-                    .setName('config')
-                    .setDescription('Save your WOL configuration.')
-                    .addStringOption((option) =>
-                        option
-                            .setName('sshhost')
-                            .setDescription(
-                                'The SSH host / IP of the target PC.'
-                            )
-                            .setRequired(true)
-                    )
-                    .addStringOption((option) =>
-                        option
-                            .setName('sshuser')
-                            .setDescription('The SSH user of the target PC.')
-                            .setRequired(true)
-                    )
-                    .addStringOption((option) =>
-                        option
-                            .setName('sshkey')
-                            .setDescription(
-                                'The SSH key path of the target PC.'
-                            )
-                            .setRequired(true)
-                    )
-                    .addStringOption((option) =>
-                        option
-                            .setName('targetmac')
-                            .setDescription('The MAC address of the target PC.')
-                            .setRequired(true)
-                    )
-                    .addIntegerOption((option) =>
-                        option
-                            .setName('sshport')
-                            .setDescription('The SSH port of the target PC.')
-                            .setRequired(false)
-                    )
+            .addStringOption((option) =>
+                option
+                    .setName('sshuser')
+                    .setDescription('The SSH user of the target PC.')
+                    .setRequired(true)
             )
-            .addSubcommand((subcommand) =>
-                subcommand
-                    .setName('remove')
-                    .setDescription('Remove your WOL configuration.')
+            .addStringOption((option) =>
+                option
+                    .setName('sshkey')
+                    .setDescription('The SSH key path of the target PC.')
+                    .setRequired(true)
             )
+            .addStringOption((option) =>
+                option
+                    .setName('targetmac')
+                    .setDescription('The MAC address of the target PC.')
+                    .setRequired(true)
+            )
+            .addIntegerOption((option) =>
+                option
+                    .setName('sshport')
+                    .setDescription('The SSH port of the target PC.')
+                    .setRequired(false)
+            )
+    )
+    .addSubcommand((subcommand) =>
+        subcommand
+            .setName('remove')
+            .setDescription('Remove your WOL configuration.')
     );
 
 async function handleWakePC(interaction: CommandInteraction) {
