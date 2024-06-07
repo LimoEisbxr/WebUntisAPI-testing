@@ -66,10 +66,10 @@ jobs:
             - name: wait and print status
               run: |
                   sleep 30
-                  ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker compose ps'
+                  ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker ps'
             - name: print logs
               run: |
-                  ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker compose logs webuntis-bot'
+                  ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker logs webuntis-bot'
             - name: cleanup
               run: |
                   rm -rf ~/.ssh
