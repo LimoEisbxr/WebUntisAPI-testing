@@ -167,20 +167,22 @@ export async function execute(interaction: CommandInteraction) {
             interaction.options as CommandInteractionOptionResolver<CacheType>
         ).getSubcommand();
 
-        if (subcommandGroup === 'subcommands') {
-            if (subcommand === 'pc') {
-                await handleWakePC(interaction);
-                return;
-            } else if (subcommand === 'config') {
-                await saveWoLConfig(interaction);
-                return;
-            } else if (subcommand === 'remove') {
-                await removeWoLConfig(interaction);
-                return;
-            }
+        console.log(`Subcommand Group: ${subcommandGroup}`);
 
-            await interaction.reply('Invalid subcommand.');
+        console.log(`Subcommand: ${subcommand}`);
+
+        if (subcommand === 'pc') {
+            await handleWakePC(interaction);
+            return;
+        } else if (subcommand === 'config') {
+            await saveWoLConfig(interaction);
+            return;
+        } else if (subcommand === 'remove') {
+            await removeWoLConfig(interaction);
+            return;
         }
+
+        await interaction.reply('Invalid subcommand.');
     }
 
     await interaction.reply({ content: 'Invalid command.', ephemeral: true });
