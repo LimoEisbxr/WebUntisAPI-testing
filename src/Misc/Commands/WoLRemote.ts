@@ -30,12 +30,6 @@ export const data = new SlashCommandBuilder()
                             )
                             .setRequired(true)
                     )
-                    .addIntegerOption((option) =>
-                        option
-                            .setName('sshport')
-                            .setDescription('The SSH port of the target PC.')
-                            .setRequired(false)
-                    )
                     .addStringOption((option) =>
                         option
                             .setName('sshuser')
@@ -55,6 +49,12 @@ export const data = new SlashCommandBuilder()
                             .setName('targetmac')
                             .setDescription('The MAC address of the target PC.')
                             .setRequired(true)
+                    )
+                    .addIntegerOption((option) =>
+                        option
+                            .setName('sshport')
+                            .setDescription('The SSH port of the target PC.')
+                            .setRequired(false)
                     )
             )
             .addSubcommand((subcommand) =>
