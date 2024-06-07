@@ -65,7 +65,7 @@ jobs:
                   ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker compose pull && docker compose up -d'
             - name: wait and print status
               run: |
-                  sleep 30
+                  sleep 100
                   ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker ps'
             - name: print logs
               run: |
