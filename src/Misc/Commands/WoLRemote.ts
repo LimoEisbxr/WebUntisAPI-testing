@@ -61,7 +61,10 @@ async function handleWakePC(interaction: CommandInteraction) {
     });
 
     if (!user) {
-        await interaction.reply('No WOL configuration found for your account.');
+        await interaction.reply({
+            content: 'No WOL configuration found for your account.',
+            ephemeral: true,
+        });
         return;
     }
 
@@ -79,11 +82,15 @@ async function handleWakePC(interaction: CommandInteraction) {
             decryptedSshUser,
             decryptedSshKey
         );
-        await interaction.reply(`WOL packet sent to ${decryptedSshHost}.`);
+        await interaction.reply({
+            content: `WOL packet sent to ${decryptedSshHost}.`,
+            ephemeral: true,
+        });
     } catch (error) {
-        await interaction.reply(
-            'Failed to send WOL packet. Please try again later.'
-        );
+        await interaction.reply({
+            content: 'Failed to send WOL packet. Please try again later.',
+            ephemeral: true,
+        });
     }
 }
 
@@ -132,7 +139,10 @@ async function saveWoLConfig(interaction: CommandInteraction) {
         },
     });
 
-    await interaction.reply('Your WOL configuration has been saved.');
+    await interaction.reply({
+        content: 'Your WOL configuration has been saved.',
+        ephemeral: true,
+    });
 }
 
 async function removeWoLConfig(interaction: CommandInteraction) {
@@ -141,15 +151,20 @@ async function removeWoLConfig(interaction: CommandInteraction) {
     });
 
     if (!user) {
-        await interaction.reply('You have not saved any WOL configuration.');
+        await interaction.reply({
+            content: 'You have not saved any WOL configuration.',
+            ephemeral: true,
+        });
         return;
     }
 
     await prisma.woLRemoteUser.delete({
         where: { discordId: interaction.user.id },
     });
-
-    await interaction.reply('Your WOL configuration has been removed.');
+    await interaction.reply({
+        content: 'Your WOL configuration has been removed.',
+        ephemeral: true,
+    });
 }
 
 export async function execute(interaction: CommandInteraction) {
@@ -182,7 +197,10 @@ export async function execute(interaction: CommandInteraction) {
             return;
         }
 
-        await interaction.reply('Invalid subcommand.');
+        await interaction.reply({
+            content: 'Invalid subcommand.',
+            ephemeral: true,
+        });
     }
 
     await interaction.reply({ content: 'Invalid command.', ephemeral: true });
