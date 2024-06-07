@@ -86,9 +86,9 @@ async function handleWakePC(interaction: CommandInteraction) {
             content: `WOL packet sent to ${decryptedSshHost}.`,
             ephemeral: true,
         });
-    } catch (error) {
+    } catch (error: any) {
         await interaction.reply({
-            content: 'Failed to send WOL packet. Please try again later.',
+            content: `Failed to send WOL packet. Please try again later ${error.message}`,
             ephemeral: true,
         });
     }
