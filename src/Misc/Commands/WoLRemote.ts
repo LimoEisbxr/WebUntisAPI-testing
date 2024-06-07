@@ -157,6 +157,8 @@ export async function execute(interaction: CommandInteraction) {
 
     const commandName = interaction.commandName;
 
+    console.log(`Command: ${commandName}`);
+
     if (commandName === 'wolremote') {
         const subcommandGroup = (
             interaction.options as CommandInteractionOptionResolver<CacheType>
