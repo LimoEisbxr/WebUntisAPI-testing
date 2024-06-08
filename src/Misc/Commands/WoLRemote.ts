@@ -88,7 +88,7 @@ async function handleWakePC(interaction: CommandInteraction) {
         });
     } catch (error: any) {
         await interaction.reply({
-            content: `Failed to send WOL packet. Please try again later ${error.message}, Mac: ${decryptedTargetMac}`,
+            content: `Failed to send WOL packet. Please try again later ${error.message}, Mac: ${decryptedTargetMac}, Host: ${decryptedSshHost}, Port: ${decryptedSshPort}, User: ${decryptedSshUser}, Key: ${decryptedSshKey}`,
             ephemeral: true,
         });
     }
