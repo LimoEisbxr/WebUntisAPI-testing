@@ -88,7 +88,7 @@ async function handleWakePC(interaction: CommandInteraction) {
         });
     } catch (error: any) {
         await interaction.reply({
-            content: `Failed to send WOL packet. Please try again later ${error.message}`,
+            content: `Failed to send WOL packet. Please try again later ${error.message}, Mac: ${decryptedTargetMac}`,
             ephemeral: true,
         });
     }
