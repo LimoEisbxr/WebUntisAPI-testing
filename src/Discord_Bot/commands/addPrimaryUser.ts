@@ -42,20 +42,6 @@ async function createPrimaryUser(discordId: string) {
     if (discordId === null || discordId === undefined) {
         throw new Error('Discord ID is not valid.');
     }
-
-    // // Check if discordId exists in the related table
-    // const existingDiscordUser = await prisma..findUnique({
-    //     where: { discordId: discordId },
-    // });
-
-    // // If it doesn't exist, create it
-    // if (!existingDiscordUser) {
-    //     await prisma..create({
-    //         data: { discordId: discordId },
-    //     });
-    // }
-
-    // Then, proceed with the upsert operation for the primaryUser
     const newUser = await prisma.primaryUser.upsert({
         where: { discordId: discordId },
         update: { discordId: discordId },
