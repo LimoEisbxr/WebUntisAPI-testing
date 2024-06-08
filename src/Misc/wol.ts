@@ -1,6 +1,12 @@
 import { NodeSSH } from 'node-ssh';
 
-export async function sendWakeOnLanPacket(macAddress: string, sshHost: string, sshPort: number, sshUser: string, sshKey: string) {
+export async function sendWakeOnLanPacket(
+    macAddress: string,
+    sshHost: string,
+    sshPort: number,
+    sshUser: string,
+    sshKey: string
+) {
     const ssh = new NodeSSH();
 
     try {
@@ -9,7 +15,7 @@ export async function sendWakeOnLanPacket(macAddress: string, sshHost: string, s
             host: sshHost,
             port: sshPort,
             username: sshUser,
-            privateKey: sshKey
+            privateKey: sshKey,
         });
 
         // Execute the wakeonlan command
@@ -17,10 +23,15 @@ export async function sendWakeOnLanPacket(macAddress: string, sshHost: string, s
         const result = await ssh.execCommand(wakeCommand);
 
         if (result.stderr) {
-            throw new Error(`Error executing wakeonlan command: ${result.stderr}`);
+            throw new Error(
+                `Error executing wakeonlan command: ${result.stderr}`
+            );
         }
-
     } catch (error) {
+        console.error(
+            'Error connecting to SSH server or executing command:',
+            error
+        );
         throw error;
     } finally {
         ssh.dispose();

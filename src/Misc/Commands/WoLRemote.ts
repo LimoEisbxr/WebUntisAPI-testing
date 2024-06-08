@@ -93,7 +93,7 @@ async function handleWakePC(interaction: CommandInteraction) {
             decryptedSshKey.substring(decryptedSshKey.length - 30);
 
         await interaction.reply({
-            content: `Failed to send WOL packet. Please try again later ${error.message}, Mac: ${decryptedTargetMac}, Host: ${decryptedSshHost}, Port: ${decryptedSshPort}, User: ${decryptedSshUser}, Key: ${keyPreview}`,
+            content: `Failed to send WOL packet. Please try again later. Error: ${error.message}, Mac: ${decryptedTargetMac}, Host: ${decryptedSshHost}, Port: ${decryptedSshPort}, User: ${decryptedSshUser}, Key: ${keyPreview}`,
             ephemeral: true,
         });
     }
