@@ -10,13 +10,22 @@ export async function sendWakeOnLanPacket(
     sshUser: string,
     sshKey: string
 ) {
+    // Convert MAC address to the correct format
+    const formattedMacAddress = macAddress.replace(/-/g, ':');
+
     // Create a temporary file to store the SSH key
     const keyFilePath = path.join(os.tmpdir(), 'temp_ssh_key');
     fs.writeFileSync(keyFilePath, sshKey, { mode: 0o600 });
 
     try {
-        // Construct the SSH command
-        const sshCommand = `ssh -i ${keyFilePath} -p ${sshPort} ${sshUser}@${sshHost} wakeonlan ${macAddress}`;
+        // Construct the SSH command to check for wakeonlan and install if not found
+        const sshCommand = `
+            ssh -o StrictHostKeyChecking=no -i ${keyFilePath} -p ${sshPort} ${sshUser}@${sshHost} "
+            if ! command -v wakeonlan &> /dev/null; then
+                echo 'wakeonlan not found, attempting to install...';
+                sudo apt-get update && sudo apt-get install -y wakeonlan;
+            fi;
+            wakeonlan ${formattedMacAddress}"`;
 
         // Execute the SSH command
         exec(sshCommand, (error, stdout, stderr) => {
