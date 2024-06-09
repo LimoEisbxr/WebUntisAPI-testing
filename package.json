@@ -13,6 +13,7 @@
     "devDependencies": {
         "@types/node": "^20.12.11",
         "@types/pg": "^8.11.6",
+        "@types/ssh2": "^1.15.0",
         "prisma": "^5.13.0",
         "typescript": "^5.4.5"
     },
@@ -25,6 +26,7 @@
         "node-ssh": "^13.2.0",
         "pg": "^8.11.5",
         "prisma": "5.14.0",
+        "ssh2": "^1.15.0",
         "webuntis": "^2.2.1"
     }
 }

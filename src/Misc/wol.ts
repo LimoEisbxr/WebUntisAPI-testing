@@ -1,4 +1,4 @@
-import { NodeSSH } from 'node-ssh';
+import { Client } from 'ssh2';
 
 export async function sendWakeOnLanPacket(
     macAddress: string,
@@ -6,37 +6,51 @@ export async function sendWakeOnLanPacket(
     sshPort: number,
     sshUser: string,
     sshKey: string
-) {
-    const ssh = new NodeSSH();
+): Promise<void> {
+    const conn = new Client();
 
-    try {
-        // Ensure the private key is correctly formatted as a single string
-        const privateKey = sshKey.trim(); // Trimming any accidental whitespace
-
-        // Connect to the SSH server
-        await ssh.connect({
+    return new Promise((resolve, reject) => {
+        conn.on('ready', () => {
+            console.log('Client :: ready');
+            const wakeCommand = `wakeonlan ${macAddress}`;
+            conn.exec(wakeCommand, (err, stream) => {
+                if (err) {
+                    conn.end();
+                    return reject(err);
+                }
+                stream
+                    .on('close', (code: number, signal: string) => {
+                        console.log(
+                            'Stream :: close :: code: ' +
+                                code +
+                                ', signal: ' +
+                                signal
+                        );
+                        conn.end();
+                        if (code !== 0) {
+                            return reject(
+                                new Error(`Non-zero exit code: ${code}`)
+                            );
+                        }
+                        resolve();
+                    })
+                    .on('data', (data: Buffer) => {
+                        console.log('STDOUT: ' + data.toString());
+                    })
+                    .stderr.on('data', (data: Buffer) => {
+                        console.error('STDERR: ' + data.toString());
+                        reject(
+                            new Error(
+                                `Error executing wakeonlan command: ${data.toString()}`
+                            )
+                        );
+                    });
+            });
+        }).connect({
             host: sshHost,
             port: sshPort,
             username: sshUser,
-            privateKey: privateKey,
+            privateKey: sshKey.trim(), // Trimming any accidental whitespace
         });
-
-        // Execute the wakeonlan command
-        const wakeCommand = `wakeonlan ${macAddress}`;
-        const result = await ssh.execCommand(wakeCommand);
-
-        if (result.stderr) {
-            throw new Error(
-                `Error executing wakeonlan command: ${result.stderr}`
-            );
-        }
-    } catch (error) {
-        console.error(
-            'Error connecting to SSH server or executing command:',
-            error
-        );
-        throw error;
-    } finally {
-        ssh.dispose();
-    }
+    });
 }
