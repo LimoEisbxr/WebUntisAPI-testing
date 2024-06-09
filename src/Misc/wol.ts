@@ -10,15 +10,15 @@ export async function sendWakeOnLanPacket(
     const ssh = new NodeSSH();
 
     try {
-        // Convert the private key string to a Buffer
-        const privateKeyBuffer = Buffer.from(sshKey, 'utf8');
+        // Ensure the private key is correctly formatted as a single string
+        const privateKey = sshKey.trim(); // Trimming any accidental whitespace
 
         // Connect to the SSH server
         await ssh.connect({
             host: sshHost,
             port: sshPort,
             username: sshUser,
-            privateKey: privateKeyBuffer,
+            privateKey: privateKey,
         });
 
         // Execute the wakeonlan command
