@@ -16,11 +16,12 @@ export async function sendWakeOnLanPacket(
     // Create a temporary file to store the SSH key
     const keyFilePath = path.join(os.tmpdir(), 'temp_ssh_key');
     fs.writeFileSync(keyFilePath, sshKey, { mode: 0o600 });
+    // ssh -o StrictHostKeyChecking=no -i ${keyFilePath} -p ${sshPort} ${sshUser}@${sshHost} "
 
     try {
         // Construct the SSH command to check for wakeonlan and install if not found
         const sshCommand = `
-            ssh -o StrictHostKeyChecking=no -i ${keyFilePath} -p ${sshPort} ${sshUser}@${sshHost} "
+            // ssh -i ${keyFilePath} -p ${sshPort} ${sshUser}@${sshHost} "
             if ! command -v wakeonlan &> /dev/null; then
                 echo 'wakeonlan not found, attempting to install...';
                 sudo apt-get update && sudo apt-get install -y wakeonlan;
