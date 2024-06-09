@@ -61,9 +61,9 @@ jobs:
                   chmod 600 ~/.ssh/deploy_key
                   ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
-            # - name: print logs 1
-            #   run: |
-            #       ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker logs webuntis-bot'
+            - name: print logs 1
+              run: |
+                  ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker logs webuntis-bot'
             - name: connect and pull
               run: |
                   ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'cd ./webuntis_bot && docker compose pull && docker compose up -d'
