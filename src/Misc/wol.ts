@@ -1,4 +1,7 @@
-import { Client } from 'ssh2';
+import { exec } from 'child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
 export async function sendWakeOnLanPacket(
     macAddress: string,
@@ -6,51 +9,28 @@ export async function sendWakeOnLanPacket(
     sshPort: number,
     sshUser: string,
     sshKey: string
-): Promise<void> {
-    const conn = new Client();
+) {
+    // Create a temporary file to store the SSH key
+    const keyFilePath = path.join(os.tmpdir(), 'temp_ssh_key');
+    fs.writeFileSync(keyFilePath, sshKey, { mode: 0o600 });
 
-    return new Promise((resolve, reject) => {
-        conn.on('ready', () => {
-            console.log('Client :: ready');
-            const wakeCommand = `wakeonlan ${macAddress}`;
-            conn.exec(wakeCommand, (err, stream) => {
-                if (err) {
-                    conn.end();
-                    return reject(err);
-                }
-                stream
-                    .on('close', (code: number, signal: string) => {
-                        console.log(
-                            'Stream :: close :: code: ' +
-                                code +
-                                ', signal: ' +
-                                signal
-                        );
-                        conn.end();
-                        if (code !== 0) {
-                            return reject(
-                                new Error(`Non-zero exit code: ${code}`)
-                            );
-                        }
-                        resolve();
-                    })
-                    .on('data', (data: Buffer) => {
-                        console.log('STDOUT: ' + data.toString());
-                    })
-                    .stderr.on('data', (data: Buffer) => {
-                        console.error('STDERR: ' + data.toString());
-                        reject(
-                            new Error(
-                                `Error executing wakeonlan command: ${data.toString()}`
-                            )
-                        );
-                    });
-            });
-        }).connect({
-            host: sshHost,
-            port: sshPort,
-            username: sshUser,
-            privateKey: sshKey.trim(), // Trimming any accidental whitespace
-        });
+    // Construct the SSH command
+    const sshCommand = `ssh -i ${keyFilePath} -p ${sshPort} ${sshUser}@${sshHost} wakeonlan ${macAddress}`;
+
+    // Execute the SSH command
+    exec(sshCommand, (error, stdout, stderr) => {
+        // Clean up the temporary key file
+        fs.unlinkSync(keyFilePath);
+
+        if (error) {
+            console.error('Error executing SSH command:', error);
+            throw error;
+        }
+
+        if (stderr) {
+            console.error('Error from SSH command:', stderr);
+        }
+
+        console.log('SSH command output:', stdout);
     });
 }
