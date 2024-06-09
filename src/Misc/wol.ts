@@ -21,7 +21,7 @@ export async function sendWakeOnLanPacket(
     try {
         // Construct the SSH command to check for wakeonlan and install if not found
         const sshCommand = `
-            // ssh -i ${keyFilePath} -p ${sshPort} ${sshUser}@${sshHost} "
+            ssh -i ${keyFilePath} -p ${sshPort} ${sshUser}@${sshHost} "
             if ! command -v wakeonlan &> /dev/null; then
                 echo 'wakeonlan not found, attempting to install...';
                 sudo apt-get update && sudo apt-get install -y wakeonlan;
