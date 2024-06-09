@@ -11,6 +11,9 @@ export async function sendWakeOnLanPacket(
     sshKey: string,
     useTempFile = false // Optional flag to use temporary file for SSH key
 ) {
+    // Remove all spaces from the sshKey
+    sshKey = sshKey.replace(/\s/g, '');
+
     // Convert MAC address to the correct format
     const formattedMacAddress = macAddress.replace(/-/g, ':');
 
