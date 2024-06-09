@@ -14,23 +14,25 @@ export async function sendWakeOnLanPacket(
     const keyFilePath = path.join(os.tmpdir(), 'temp_ssh_key');
     fs.writeFileSync(keyFilePath, sshKey, { mode: 0o600 });
 
-    // Construct the SSH command
-    const sshCommand = `ssh -i ${keyFilePath} -p ${sshPort} ${sshUser}@${sshHost} wakeonlan ${macAddress}`;
+    try {
+        // Construct the SSH command
+        const sshCommand = `ssh -i ${keyFilePath} -p ${sshPort} ${sshUser}@${sshHost} wakeonlan ${macAddress}`;
 
-    // Execute the SSH command
-    exec(sshCommand, (error, stdout, stderr) => {
+        // Execute the SSH command
+        exec(sshCommand, (error, stdout, stderr) => {
+            if (error) {
+                console.error('Error executing SSH command:', error);
+                throw error;
+            }
+
+            if (stderr) {
+                console.error('Error from SSH command:', stderr);
+            }
+
+            console.log('SSH command output:', stdout);
+        });
+    } finally {
         // Clean up the temporary key file
         fs.unlinkSync(keyFilePath);
-
-        if (error) {
-            console.error('Error executing SSH command:', error);
-            throw error;
-        }
-
-        if (stderr) {
-            console.error('Error from SSH command:', stderr);
-        }
-
-        console.log('SSH command output:', stdout);
-    });
+    }
 }
