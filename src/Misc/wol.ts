@@ -71,7 +71,6 @@ export async function sendWakeOnLanPacket(
         }
     } else {
         // Use inline SSH key (here it assumes the remote system's shell supports process substitution)
-        // This might not work on all systems, so be cautious
         sshCommand = `
             ssh -vvv -o StrictHostKeyChecking=no -p ${sshPort} ${sshUser}@${sshHost} "
             echo '${sshKey}' | ssh -i /dev/stdin ${sshUser}@${sshHost} bash -c \"
